@@ -1,6 +1,9 @@
 package com.filipnowakdev.gps_offline_tracker.services;
 
+import android.content.Context;
 import android.location.Location;
+import android.support.annotation.Nullable;
+import android.widget.Toast;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -18,6 +21,7 @@ import java.util.Locale;
 
 public class GpxFileService
 {
+	private  Context context;
 	private DocumentBuilderFactory documentBuilderFactory;
 	private DocumentBuilder documentBuilder;
 	private Document currentDocument;
@@ -25,8 +29,9 @@ public class GpxFileService
 	private Element trkElement;
 	private Element trksegElement;
 
-	public GpxFileService()
+	public GpxFileService(Context context)
 	{
+		this.context = context;
 		init();
 	}
 
@@ -83,11 +88,13 @@ public class GpxFileService
 	}
 
 
-	public void saveDocumentAsFile(File file)
+	public void saveDocumentAsFile(String filename)
 	{
 		try
 		{
+			File file = new File(context.getExternalFilesDir(null), filename + ".gpx");
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(currentDocument);
 			StreamResult result = new StreamResult(file);
@@ -103,12 +110,22 @@ public class GpxFileService
 		}
 	}
 
+	public File[] getListOfFiles()
+	{
+		File folder = context.getExternalFilesDir(null);
+		if(folder != null)
+			return folder.listFiles();
+		else
+			return null;
+	}
+
 	private String convertTime(long time)
 	{
 		Date date = new Date(time);
 		Format format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 		return format.format(date);
 	}
+
 
 
 }

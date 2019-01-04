@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" 
+	version="1.1" creator="anonymous">
+	<trk>
+		<trkseg>
+			<trkpt lat="52.62789833333333" lon="21.8839">
+				<ele>0.0</ele>
+				<time>2018-12-27T09:03:47Z</time>
+			</trkpt>
+			<trkpt lat="52.62800000000001" lon="21.8836">
+				<ele>0.0</ele>
+					<time>2018-12-27T09:03:48Z</time>
+			</trkpt>
+			<trkpt lat="52.628099999999996" lon="21.883198333333333">
+				<ele>0.0</ele>
+				<time>2018-12-27T09:03:49Z</time>
+			</trkpt>
+			<trkpt lat="52.628099999999996" lon="21.88299833333333">
+				<ele>0.0</ele>
+				<time>2018-12-27T09:03:50Z</time>
+			</trkpt>
+			<trkpt lat="52.62819833333333" lon="21.8823">
+				<ele>128.5</ele>
+				<time>2018-12-27T09:03:52Z</time>
+			</trkpt>
+			<trkpt lat="52.6283" lon="21.881900000000005">
+				<ele>133.0</ele>
+				<time>2018-12-27T09:03:53Z</time>
+			</trkpt>
+			<trkpt lat="52.6283" lon="21.881598333333333">
+				<ele>0.0</ele>
+				<time>2018-12-27T09:03:55Z</time>
+			</trkpt>
+			<trkpt lat="52.6283" lon="21.881298333333334">
+				<ele>0.0</ele>
+				<time>2018-12-27T09:03:55Z</time>
+			</trkpt>
+		</trkseg>
+	</trk>
+</gpx>

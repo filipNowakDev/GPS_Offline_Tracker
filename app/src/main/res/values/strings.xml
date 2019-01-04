@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">GPS_offline_tracker</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_exit">Exit</string>
+    <string name="get_coordinates_button_text">Get coords</string>
+    <string name="latitude_label">Lat: %1$f</string>
+    <string name="longitude_label">Lon: %1$f</string>
+    <string name="start_recording_string">Start REcording</string>
+    <string name="end_recording">End Recording</string>
+    <string name="channel_name">com.filipnowakdev.gps_offline_tracker.notifications</string>
+    <string name="channel_description">Offline gps tracker notification channel</string>
+    <string name="title_activity_tracks">Tracks</string>
+</resources>

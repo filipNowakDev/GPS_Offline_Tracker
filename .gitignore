@@ -1,4 +1,5 @@
 *.iml
+*.gpx
 .gradle
 /local.properties
 /.idea/libraries

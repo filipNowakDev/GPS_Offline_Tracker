@@ -16,8 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-import java.io.File;
-
 public class LocationService extends Service implements LocationListener
 {
 	public static final String BROADCAST_LOCATION_UPDATE = "com.filipnowakdev.gps_offline_tracker.LOCATION_UPDATE";
@@ -29,7 +27,7 @@ public class LocationService extends Service implements LocationListener
 	private LocationManager locationManager;
 	private LocalBroadcastManager localBroadcastManager;
 
-	private GpxFileService gpxFileService;
+	private IGpxFileService gpxFileService;
 	private boolean isRecording;
 	private IBinder binder = new LocationServiceBinder();
 
@@ -42,7 +40,7 @@ public class LocationService extends Service implements LocationListener
 	{
 		if (gpxFileService != null)
 		{
-			gpxFileService.createNewDocument();
+			gpxFileService.createNewTrack();
 			gpxFileService.addNewTrackpoint(getLocation());
 			isRecording = true;
 			Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
@@ -54,7 +52,7 @@ public class LocationService extends Service implements LocationListener
 		if (isRecording)
 		{
 			isRecording = false;
-			gpxFileService.saveDocumentAsFile(filename);
+			gpxFileService.saveTrackAsFile(filename);
 			Toast.makeText(this, "Recording saved as " + filename + ".gpx", Toast.LENGTH_SHORT).show();
 
 		}
@@ -82,7 +80,7 @@ public class LocationService extends Service implements LocationListener
 
 	private void initGpxManager()
 	{
-		gpxFileService = new GpxFileService(this);
+		gpxFileService = new FileWriterGpxFileService(this);
 	}
 
 	private void displayError()

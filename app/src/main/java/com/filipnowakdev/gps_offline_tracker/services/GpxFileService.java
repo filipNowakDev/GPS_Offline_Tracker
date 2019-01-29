@@ -16,7 +16,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class GpxFileService
+public class GpxFileService implements IGpxFileService
 {
 	private Context context;
 	private DocumentBuilderFactory documentBuilderFactory;
@@ -44,7 +44,8 @@ public class GpxFileService
 		}
 	}
 
-	public void createNewDocument()
+	@Override
+	public void createNewTrack()
 	{
 		try
 		{
@@ -73,6 +74,7 @@ public class GpxFileService
 		trk.appendChild(trkseg);
 	}
 
+	@Override
 	public void addNewTrackpoint(Location location)
 	{
 		if (currentDocument != null)
@@ -99,7 +101,8 @@ public class GpxFileService
 	}
 
 
-	public void saveDocumentAsFile(String filename)
+	@Override
+	public void saveTrackAsFile(String filename)
 	{
 		try
 		{
@@ -130,6 +133,7 @@ public class GpxFileService
 		}
 	}
 
+	@Override
 	public List<File> getListOfFiles()
 	{
 		File folder = context.getExternalFilesDir(null);

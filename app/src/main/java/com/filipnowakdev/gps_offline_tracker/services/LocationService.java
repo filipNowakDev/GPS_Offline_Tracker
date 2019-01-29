@@ -43,6 +43,7 @@ public class LocationService extends Service implements LocationListener
 		if (gpxFileService != null)
 		{
 			gpxFileService.createNewDocument();
+			gpxFileService.addNewTrackpoint(getLocation());
 			isRecording = true;
 			Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
 		}
@@ -53,8 +54,7 @@ public class LocationService extends Service implements LocationListener
 		if (isRecording)
 		{
 			isRecording = false;
-			gpxFileService.saveDocumentAsFile(new File(getExternalFilesDir(null), filename + ".gpx"));
-			System.out.println(getExternalFilesDir(null));
+			gpxFileService.saveDocumentAsFile(filename);
 			Toast.makeText(this, "Recording saved as " + filename + ".gpx", Toast.LENGTH_SHORT).show();
 
 		}
@@ -82,7 +82,7 @@ public class LocationService extends Service implements LocationListener
 
 	private void initGpxManager()
 	{
-		gpxFileService = new GpxFileService();
+		gpxFileService = new GpxFileService(this);
 	}
 
 	private void displayError()

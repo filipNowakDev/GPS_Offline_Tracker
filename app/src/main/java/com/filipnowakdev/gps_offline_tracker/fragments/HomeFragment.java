@@ -26,6 +26,7 @@ public class HomeFragment extends Fragment
 
 	private TextView latView;
 	private TextView lonView;
+	private TextView accView;
 	private Button startRecordingButton;
 	private Button endRecordingButton;
 
@@ -92,9 +93,16 @@ public class HomeFragment extends Fragment
 			{
 				if (isLocationServiceBound)
 				{
-					locationService.startRecording();
-					setRecordingButtonsActivated();
-					notificationService.displayRecordingNotification();
+					if (locationService.getLocation() != null)
+					{
+						locationService.startRecording();
+						setRecordingButtonsActivated();
+						notificationService.displayRecordingNotification();
+					}
+					else
+					{
+						displayError();
+					}
 				}
 			}
 		});
@@ -172,6 +180,7 @@ public class HomeFragment extends Fragment
 		{
 			latView.setText(getString(R.string.latitude_label, location.getLatitude()));
 			lonView.setText(getString(R.string.longitude_label, location.getLongitude()));
+			accView.setText(getString(R.string.accuracy_label, location.getAccuracy()));
 		} else
 			displayError();
 	}
@@ -180,6 +189,7 @@ public class HomeFragment extends Fragment
 	{
 		latView = getView().findViewById(R.id.latitude_box);
 		lonView = getView().findViewById(R.id.longitude_box);
+		accView = getView().findViewById(R.id.accuracy_box);
 	}
 
 	private void initLocationService()
@@ -199,6 +209,7 @@ public class HomeFragment extends Fragment
 					locationService = locationServiceBinder.getService();
 					isLocationServiceBound = true;
 					setRecordingButtonsActivated();
+					updateLocation();
 				}
 
 				@Override

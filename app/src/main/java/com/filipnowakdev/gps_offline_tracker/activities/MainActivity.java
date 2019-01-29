@@ -1,33 +1,20 @@
 package com.filipnowakdev.gps_offline_tracker.activities;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.*;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.TracksFragment;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
-import com.filipnowakdev.gps_offline_tracker.services.LocationService;
-import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
 
 public class MainActivity extends AppCompatActivity
 {
-
 
 
 	private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
@@ -42,7 +29,7 @@ public class MainActivity extends AppCompatActivity
 				case R.id.navigation_home:
 					return loadFragment(new HomeFragment());
 				case R.id.navigation_dashboard:
-					return true;
+					return loadFragment(new TracksFragment());
 				case R.id.navigation_exit:
 					return true;
 			}
@@ -87,8 +74,10 @@ public class MainActivity extends AppCompatActivity
 		navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
 	}
 
-	private boolean loadFragment(Fragment fragment) {
-		if (fragment != null) {
+	private boolean loadFragment(Fragment fragment)
+	{
+		if (fragment != null)
+		{
 			getSupportFragmentManager()
 					.beginTransaction()
 					.replace(R.id.fragment_container, fragment)

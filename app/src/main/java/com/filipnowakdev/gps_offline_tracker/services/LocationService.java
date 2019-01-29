@@ -43,6 +43,7 @@ public class LocationService extends Service implements LocationListener
 		if (gpxFileService != null)
 		{
 			gpxFileService.createNewDocument();
+			gpxFileService.addNewTrackpoint(getLocation());
 			isRecording = true;
 			Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
 		}

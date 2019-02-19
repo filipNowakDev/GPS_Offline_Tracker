@@ -2,10 +2,12 @@ package com.filipnowakdev.gps_offline_tracker.services;
 
 import android.content.Context;
 import android.location.Location;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -52,11 +54,25 @@ public class FileWriterGpxFileService implements IGpxFileService
         {
             tempFile = new File(context.getExternalFilesDir(null), TEMP_FILE_NAME);
             tempWriter = new BufferedWriter(new FileWriter(tempFile));
-        } catch (Exception e)
+        }
+        catch(IOException e)
         {
             e.printStackTrace();
         }
         writeTempHeaders();
+    }
+
+    private void reinitTempFile()
+    {
+        try
+        {
+            tempFile = new File(context.getExternalFilesDir(null), TEMP_FILE_NAME);
+            tempWriter = new BufferedWriter(new FileWriter(tempFile, true));
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void writeTempHeaders()
@@ -66,7 +82,7 @@ public class FileWriterGpxFileService implements IGpxFileService
             tempWriter.write(XML_HEADER);
             tempWriter.write(GPX_HEADER);
             tempWriter.flush();
-        } catch (Exception e)
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -77,15 +93,24 @@ public class FileWriterGpxFileService implements IGpxFileService
     {
         try
         {
+            reinitTempFile();
             tempWriter.write(
                     "            <trkpt lat=\"" + location.getLatitude() + "\" lon=\"" + location.getLongitude() + "\">\n" +
                             "                <ele>" + location.getAltitude() + "</ele>\n" +
                             "                <time>" + convertTime(location.getTime()) + "</time>\n" +
                             "            </trkpt>\n"
             );
-        } catch (Exception e)
+            tempWriter.flush();
+            tempWriter.close();
+            System.out.println("NEW TRKPT");
+
+        } catch (IOException e)
         {
             e.printStackTrace();
+            System.out.println("WRONG TRKPT NOT ADDED");
+
+            Toast.makeText(context, "IOOOIIIOOO.", Toast.LENGTH_LONG).show();
+
         }
     }
 
@@ -94,12 +119,14 @@ public class FileWriterGpxFileService implements IGpxFileService
     {
         try
         {
+            reinitTempFile();
             tempWriter.write(GPX_FOOTER);
             tempWriter.flush();
-            //tempWriter.close();
-        } catch (Exception e)
+            tempWriter.close();
+        } catch (IOException e)
         {
             e.printStackTrace();
+            Toast.makeText(context, "IOOOIIIOOO.", Toast.LENGTH_LONG).show();
         }
 
         if(tempFile.renameTo(new File(context.getExternalFilesDir(null), filename + ".gpx")))

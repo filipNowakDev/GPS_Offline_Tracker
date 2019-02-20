@@ -2,8 +2,6 @@ package com.filipnowakdev.gps_offline_tracker.services;
 
 import android.content.Context;
 import android.location.Location;
-import android.widget.Toast;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -31,6 +29,8 @@ public class FileWriterGpxFileService implements IGpxFileService
             "        </trkseg>\n" +
                     "    </trk>\n" +
                     "</gpx>";
+    private static final String TRACKS_TEMP_DIR = "tracks/temp/";
+    private static final String TRACKS_RECORDINGS_DIR = "tracks/recordings/";
 
 
     private Context context;
@@ -40,6 +40,28 @@ public class FileWriterGpxFileService implements IGpxFileService
     public FileWriterGpxFileService(Context context)
     {
         this.context = context;
+        initTracksDirectory();
+
+    }
+
+    private void initTracksDirectory()
+    {
+        File tempDir = new File(context.getExternalFilesDir(null), TRACKS_TEMP_DIR);
+        File tracksDir = new File(context.getExternalFilesDir(null), TRACKS_RECORDINGS_DIR);
+
+        try
+        {
+            if (!tempDir.exists())
+                if (!tempDir.mkdirs())
+                    throw new IOException();
+
+            if (!tracksDir.exists())
+                if (!tracksDir.mkdirs())
+                    throw new IOException();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -52,10 +74,9 @@ public class FileWriterGpxFileService implements IGpxFileService
     {
         try
         {
-            tempFile = new File(context.getExternalFilesDir(null), TEMP_FILE_NAME);
+            tempFile = new File(context.getExternalFilesDir(null), TRACKS_TEMP_DIR + TEMP_FILE_NAME);
             tempWriter = new BufferedWriter(new FileWriter(tempFile));
-        }
-        catch(IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -66,10 +87,9 @@ public class FileWriterGpxFileService implements IGpxFileService
     {
         try
         {
-            tempFile = new File(context.getExternalFilesDir(null), TEMP_FILE_NAME);
+            tempFile = new File(context.getExternalFilesDir(null), TRACKS_TEMP_DIR + TEMP_FILE_NAME);
             tempWriter = new BufferedWriter(new FileWriter(tempFile, true));
-        }
-        catch(IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -109,8 +129,6 @@ public class FileWriterGpxFileService implements IGpxFileService
             e.printStackTrace();
             System.out.println("WRONG TRKPT NOT ADDED");
 
-            Toast.makeText(context, "IOOOIIIOOO.", Toast.LENGTH_LONG).show();
-
         }
     }
 
@@ -126,10 +144,9 @@ public class FileWriterGpxFileService implements IGpxFileService
         } catch (IOException e)
         {
             e.printStackTrace();
-            Toast.makeText(context, "IOOOIIIOOO.", Toast.LENGTH_LONG).show();
         }
 
-        if(tempFile.renameTo(new File(context.getExternalFilesDir(null), filename + ".gpx")))
+        if (tempFile.renameTo(new File(context.getExternalFilesDir(null), TRACKS_RECORDINGS_DIR + filename + ".gpx")))
             System.out.println("RENAMED");
         else
             System.out.println("NOT RENAMED");
@@ -139,7 +156,7 @@ public class FileWriterGpxFileService implements IGpxFileService
     @Override
     public List<File> getListOfFiles()
     {
-        File folder = context.getExternalFilesDir(null);
+        File folder = new File(context.getExternalFilesDir(null), TRACKS_RECORDINGS_DIR);
         if (folder != null)
             return Arrays.asList(folder.listFiles());
         else

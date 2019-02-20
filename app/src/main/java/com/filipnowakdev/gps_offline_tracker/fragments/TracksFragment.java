@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker;
+package com.filipnowakdev.gps_offline_tracker.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,11 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.filipnowakdev.gps_offline_tracker.dummy.DummyContent;
-import com.filipnowakdev.gps_offline_tracker.services.GpxFileService;
+import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.services.FileWriterGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.services.IGpxFileService;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -24,7 +24,7 @@ import java.util.List;
 public class TracksFragment extends Fragment
 {
 	private OnListFragmentInteractionListener mListener;
-	private GpxFileService gpxFileService;
+	private IGpxFileService gpxFileService;
 
 	public TracksFragment()
 	{
@@ -66,7 +66,7 @@ public class TracksFragment extends Fragment
 	public void onAttach(Context context)
 	{
 		super.onAttach(context);
-		gpxFileService = new GpxFileService(context);
+		gpxFileService = new FileWriterGpxFileService(context);
 
 		if (context instanceof OnListFragmentInteractionListener)
 		{

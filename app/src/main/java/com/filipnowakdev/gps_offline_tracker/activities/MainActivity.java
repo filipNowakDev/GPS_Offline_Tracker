@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.TracksFragment;
+import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity

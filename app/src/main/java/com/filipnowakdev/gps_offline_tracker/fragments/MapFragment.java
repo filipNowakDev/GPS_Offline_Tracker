@@ -10,31 +10,41 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.filipnowakdev.gps_offline_tracker.R;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.OverlayItem;
-
-import java.util.ArrayList;
 
 
 public class MapFragment extends Fragment
 {
+    private static final String TRACK_ARG = "TRACK_ARG";
+    private boolean trackOverlayMode;
+    private String trackOverlayed;
+
     private MapView map;
     private IMapController mapController;
     private Location lastLocation;
-    private ArrayList<OverlayItem> overlayItems;
-    private ItemizedIconOverlay<OverlayItem> mMyLocationOverlay;
+
     private Marker currentPositionMarker;
 
     public MapFragment()
     {
         // Required empty public constructor
+    }
+
+    public static MapFragment newInstance(String trackFilename)
+    {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putString(TRACK_ARG, trackFilename);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -47,10 +57,17 @@ public class MapFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
-        Context ctx = getActivity().getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        return inflater.inflate(R.layout.fragment_map, container, false);
+
+        View v = inflater.inflate(R.layout.fragment_map, container, false);
+        if (getArguments() != null)
+        {
+            trackOverlayMode = true;
+            trackOverlayed = getArguments().getString(TRACK_ARG);
+        }
+        initMap(v);
+        initLocationMarker();
+        initTrackOverlay();
+        return v;
     }
 
 
@@ -61,23 +78,29 @@ public class MapFragment extends Fragment
         map.onPause();
     }
 
-    @Override
-    public void onStart()
-    {
-        map = getView().findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.HIKEBIKEMAP);
-        map.setMultiTouchControls(true);
-        mapController = map.getController();
-        mapController.setZoom(15.0);
 
+    private void initTrackOverlay()
+    {
+
+    }
+
+    private void initLocationMarker()
+    {
         currentPositionMarker = new Marker(map);
         currentPositionMarker.setTitle("You are here.");
         currentPositionMarker.setPosition(new GeoPoint(0.0, 0.0));
         currentPositionMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         map.getOverlays().add(currentPositionMarker);
         map.invalidate();
+    }
 
-        super.onStart();
+    private void initMap(View v)
+    {
+        map = v.findViewById(R.id.map);
+        map.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+        map.setMultiTouchControls(true);
+        mapController = map.getController();
+        mapController.setZoom(15.0);
     }
 
     @Override
@@ -87,9 +110,6 @@ public class MapFragment extends Fragment
         map.onResume();
         updateLocation();
     }
-
-
-
 
 
     public void updateLocation(Location location)
@@ -104,7 +124,7 @@ public class MapFragment extends Fragment
 
     public void updateLocation()
     {
-        if(lastLocation != null)
+        if (lastLocation != null)
         {
             updateLocation(lastLocation);
         }

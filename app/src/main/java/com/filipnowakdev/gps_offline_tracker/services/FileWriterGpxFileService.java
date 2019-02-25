@@ -2,13 +2,17 @@ package com.filipnowakdev.gps_offline_tracker.services;
 
 import android.content.Context;
 import android.location.Location;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class FileWriterGpxFileService implements IGpxFileService
 {
@@ -122,13 +126,10 @@ public class FileWriterGpxFileService implements IGpxFileService
             );
             tempWriter.flush();
             tempWriter.close();
-            System.out.println("NEW TRKPT");
 
         } catch (IOException e)
         {
             e.printStackTrace();
-            System.out.println("WRONG TRKPT NOT ADDED");
-
         }
     }
 
@@ -157,10 +158,7 @@ public class FileWriterGpxFileService implements IGpxFileService
     public List<File> getListOfFiles()
     {
         File folder = new File(context.getExternalFilesDir(null), TRACKS_RECORDINGS_DIR);
-        if (folder != null)
-            return Arrays.asList(folder.listFiles());
-        else
-            return new ArrayList<>();
+        return Arrays.asList(folder.listFiles());
     }
 
     private String convertTime(long time)

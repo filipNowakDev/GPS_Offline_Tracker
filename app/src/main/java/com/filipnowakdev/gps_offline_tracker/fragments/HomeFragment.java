@@ -1,18 +1,16 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+
 import com.filipnowakdev.gps_offline_tracker.R;
 
 public class HomeFragment extends Fragment
@@ -33,11 +31,12 @@ public class HomeFragment extends Fragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState)
     {
-
-
-        return inflater.inflate(R.layout.fragment_home, null);
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
+        initRecordingButtons(v);
+        initCoordinatesBoxes(v);
+        return v;
     }
 
     public void setOnButtonClickListener(OnButtonClickListener onButtonClickCallback)
@@ -49,8 +48,6 @@ public class HomeFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        initCoordsBoxes();
-        initRecordingButtons();
         restoreUI();
     }
 
@@ -61,10 +58,10 @@ public class HomeFragment extends Fragment
     }
 
 
-    private void initRecordingButtons()
+    private void initRecordingButtons(View v)
     {
 
-        startRecordingButton = getView().findViewById(R.id.start_recording_button);
+        startRecordingButton = v.findViewById(R.id.start_recording_button);
         startRecordingButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -75,7 +72,7 @@ public class HomeFragment extends Fragment
             }
         });
 
-        endRecordingButton = getView().findViewById(R.id.end_recording_button);
+        endRecordingButton = v.findViewById(R.id.end_recording_button);
         endRecordingButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -110,7 +107,7 @@ public class HomeFragment extends Fragment
     public void updateLocation(Location location)
     {
         this.lastLocation = location;
-        if(location != null)
+        if (location != null)
         {
             latView.setText(getString(R.string.latitude_label, location.getLatitude()));
             lonView.setText(getString(R.string.longitude_label, location.getLongitude()));
@@ -121,18 +118,18 @@ public class HomeFragment extends Fragment
 
     public void updateLocation()
     {
-        if(lastLocation != null)
+        if (lastLocation != null)
         {
             updateLocation(lastLocation);
         }
     }
 
-    private void initCoordsBoxes()
+    private void initCoordinatesBoxes(View v)
     {
-        latView = getView().findViewById(R.id.latitude_box);
-        lonView = getView().findViewById(R.id.longitude_box);
-        accView = getView().findViewById(R.id.accuracy_box);
-        speedView = getView().findViewById(R.id.speed_box);
+        latView = v.findViewById(R.id.latitude_box);
+        lonView = v.findViewById(R.id.longitude_box);
+        accView = v.findViewById(R.id.accuracy_box);
+        speedView = v.findViewById(R.id.speed_box);
     }
 
     public void setLastLocation(Location lastLocation)
@@ -143,6 +140,7 @@ public class HomeFragment extends Fragment
     public interface OnButtonClickListener
     {
         boolean onStartClick();
+
         boolean onEndClick();
     }
 

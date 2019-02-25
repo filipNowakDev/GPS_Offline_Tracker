@@ -1,7 +1,13 @@
 package com.filipnowakdev.gps_offline_tracker.activities;
 
 import android.Manifest;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -16,19 +22,17 @@ import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 import com.filipnowakdev.gps_offline_tracker.fragments.MapFragment;
 import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment;
-import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
-
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener
 {
 
-    private Intent locationServiceIntent;
     private LocationService locationService;
     private boolean isLocationServiceBound;
     private ServiceConnection serviceConnection;
@@ -136,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private void initLocationService()
     {
-        locationServiceIntent = new Intent(this.getApplicationContext(), LocationService.class);
+        Intent locationServiceIntent = new Intent(this.getApplicationContext(), LocationService.class);
         this.startService(locationServiceIntent);
 
 
@@ -195,8 +199,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             {
                 locationService.startRecording();
                 notificationService.displayRecordingNotification();
-            }
-            else
+            } else
             {
                 displayError();
             }
@@ -246,9 +249,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
                 homeFragment.setRecordingState(locationService.isRecordingActive());
                 homeFragment.setLastLocation(locationService.getLocation());
             }
-        }
-
-        else if (fragment instanceof MapFragment)
+        } else if (fragment instanceof MapFragment)
         {
             MapFragment mapFragment = (MapFragment) fragment;
             if (locationService != null)
@@ -259,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     }
 
 
-
     private void updateFragmentsLocation()
     {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
@@ -268,9 +268,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         {
             ((HomeFragment) fragment).updateLocation(locationService.getLocation());
             ((HomeFragment) fragment).setRecordingButtonsActivated(locationService.isRecordingActive());
-        }
-
-        else if (fragment instanceof MapFragment)
+        } else if (fragment instanceof MapFragment)
         {
             ((MapFragment) fragment).updateLocation(locationService.getLocation());
         }

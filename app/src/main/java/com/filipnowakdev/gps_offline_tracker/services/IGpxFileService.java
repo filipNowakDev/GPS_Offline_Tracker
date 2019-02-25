@@ -8,9 +8,12 @@ import java.util.List;
 
 public interface IGpxFileService
 {
-	void createNewTrack();
-	void addNewTrackpoint(Location location);
-	void saveTrackAsFile(String filename);
-	List<File> getListOfFiles();
+    void createNewTrack();
+
+    void addNewTrackpoint(Location location);
+
+    void saveTrackAsFile(String filename);
+
+    List<File> getListOfFiles();
 
 }

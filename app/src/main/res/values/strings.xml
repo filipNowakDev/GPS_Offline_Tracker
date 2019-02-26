@@ -14,4 +14,7 @@
     <string name="channel_description">Offline gps tracker notification channel</string>
     <string name="title_activity_tracks">Tracks</string>
     <string name="speed_label">Speed: %1$f m/s</string>
+    <string name="track_details">Details</string>
+    <string name="track_map">Show on map</string>
+    <string name="track_delete">Delete</string>
 </resources>

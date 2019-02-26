@@ -1,10 +1,8 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
 
-import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,13 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.services.DOMGpxReader;
+import com.filipnowakdev.gps_offline_tracker.services.FileWriterGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.services.IGpxFileReader;
+import com.filipnowakdev.gps_offline_tracker.services.IGpxFileService;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
+
+import java.util.List;
 
 
 public class MapFragment extends Fragment
@@ -30,6 +34,7 @@ public class MapFragment extends Fragment
     private MapView map;
     private IMapController mapController;
     private Location lastLocation;
+    private IGpxFileReader gpxFileReader;
 
     private Marker currentPositionMarker;
 
@@ -51,6 +56,7 @@ public class MapFragment extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        gpxFileReader = new DOMGpxReader(getContext());
     }
 
 
@@ -65,8 +71,8 @@ public class MapFragment extends Fragment
             trackOverlayed = getArguments().getString(TRACK_ARG);
         }
         initMap(v);
-        initLocationMarker();
         initTrackOverlay();
+        initLocationMarker();
         return v;
     }
 
@@ -81,7 +87,14 @@ public class MapFragment extends Fragment
 
     private void initTrackOverlay()
     {
-
+        if(trackOverlayMode)
+        {
+            List<GeoPoint> track = gpxFileReader.getListOfTrackpoints(trackOverlayed);
+            Polyline trackLine = new Polyline(map);
+            trackLine.setTitle(trackOverlayed);
+            trackLine.setPoints(track);
+            map.getOverlays().add(trackLine);
+        }
     }
 
     private void initLocationMarker()
@@ -97,7 +110,7 @@ public class MapFragment extends Fragment
     private void initMap(View v)
     {
         map = v.findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+        map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         mapController = map.getController();
         mapController.setZoom(15.0);

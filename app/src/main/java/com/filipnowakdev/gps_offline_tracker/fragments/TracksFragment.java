@@ -5,16 +5,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.services.FileWriterGpxFileService;
 import com.filipnowakdev.gps_offline_tracker.services.IGpxFileService;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Objects;
 
 public class TracksFragment extends Fragment
 {
@@ -58,7 +62,7 @@ public class TracksFragment extends Fragment
 
 
     @Override
-    public void onAttach(Context context)
+    public void onAttach(final Context context)
     {
         super.onAttach(context);
         gpxFileService = new FileWriterGpxFileService(context);
@@ -68,13 +72,25 @@ public class TracksFragment extends Fragment
             mListener = (OnListFragmentInteractionListener) context;
         } else
         {
-            mListener = new OnListFragmentInteractionListener()
+            mListener = (track, v) ->
             {
-                @Override
-                public void onListFragmentInteraction(File item)
+                PopupMenu popup = new PopupMenu(v.getContext(), v);
+                popup.getMenuInflater().inflate(R.menu.track_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(item ->
                 {
-
-                }
+                    if (item.getItemId() == R.id.track_map)
+                    {
+                        MapFragment fragment = MapFragment.newInstance(track.getName());
+                        Objects.requireNonNull(getActivity()).getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, fragment)
+                                .commitAllowingStateLoss();
+                    }
+                    //TODO implement this stub
+                    Toast.makeText(getContext(), "You selected the action : " + item.getTitle() + " - " + item.getItemId() + " filename " + track.getName(), Toast.LENGTH_SHORT).show();
+                    return true;
+                });
+                popup.show();
             };
         }
     }
@@ -98,7 +114,6 @@ public class TracksFragment extends Fragment
      */
     public interface OnListFragmentInteractionListener
     {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(File item);
+        void onListFragmentInteraction(File track, View v);
     }
 }

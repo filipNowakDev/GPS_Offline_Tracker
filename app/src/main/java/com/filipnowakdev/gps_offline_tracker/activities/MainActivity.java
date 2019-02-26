@@ -4,14 +4,12 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -19,7 +17,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -52,23 +49,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     private NotificationService notificationService;
 
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener()
+            = item ->
     {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item)
+        switch (item.getItemId())
         {
-            switch (item.getItemId())
-            {
-                case R.id.navigation_home:
-                    return loadFragment(new HomeFragment());
-                case R.id.navigation_tracks:
-                    return loadFragment(new TracksFragment());
-                case R.id.navigation_map:
-                    return loadFragment(new MapFragment());
-            }
-            return false;
+            case R.id.navigation_home:
+                return loadFragment(new HomeFragment());
+            case R.id.navigation_tracks:
+                return loadFragment(new TracksFragment());
+            case R.id.navigation_map:
+                return loadFragment(new MapFragment());
         }
+        return false;
     };
 
 
@@ -220,17 +212,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             input.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(input);
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener()
+            builder.setPositiveButton("OK", (dialog, which) ->
             {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
 
-                    String fileName = input.getText().toString();
-                    locationService.saveRecording(fileName);
-                    notificationService.hideRecordingNotification();
+                String fileName = input.getText().toString();
+                locationService.saveRecording(fileName);
+                notificationService.hideRecordingNotification();
 
-                }
             });
             builder.show();
         }

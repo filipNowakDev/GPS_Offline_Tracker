@@ -34,7 +34,7 @@ public class FileWriterGpxFileService implements IGpxFileService
                     "    </trk>\n" +
                     "</gpx>";
     private static final String TRACKS_TEMP_DIR = "tracks/temp/";
-    private static final String TRACKS_RECORDINGS_DIR = "tracks/recordings/";
+    static final String TRACKS_RECORDINGS_DIR = "tracks/recordings/";
 
 
     private Context context;

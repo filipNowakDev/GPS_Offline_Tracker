@@ -46,17 +46,13 @@ public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFile
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
         holder.creationDateView.setText(simpleDateFormat.format(fileList.get(position).lastModified()));
 
-        holder.view.setOnClickListener(new View.OnClickListener()
+        holder.view.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
+            if (null != mListener)
             {
-                if (null != mListener)
-                {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.file);
-                }
+                // Notify the active callbacks interface (the activity, if the
+                // fragment is attached to one) that an item has been selected.
+                mListener.onListFragmentInteraction(holder.file, v);
             }
         });
     }
@@ -87,5 +83,6 @@ public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFile
         {
             return super.toString() + " '" + filenameView.getText() + "'";
         }
+
     }
 }

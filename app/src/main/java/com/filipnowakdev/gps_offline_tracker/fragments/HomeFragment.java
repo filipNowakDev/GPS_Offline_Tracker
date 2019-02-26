@@ -62,25 +62,10 @@ public class HomeFragment extends Fragment
     {
 
         startRecordingButton = v.findViewById(R.id.start_recording_button);
-        startRecordingButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-
-                setRecordingButtonsActivated(onButtonClickCallback.onStartClick());
-            }
-        });
+        startRecordingButton.setOnClickListener(view -> setRecordingButtonsActivated(onButtonClickCallback.onStartClick()));
 
         endRecordingButton = v.findViewById(R.id.end_recording_button);
-        endRecordingButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                setRecordingButtonsActivated(onButtonClickCallback.onEndClick());
-            }
-        });
+        endRecordingButton.setOnClickListener(view -> setRecordingButtonsActivated(onButtonClickCallback.onEndClick()));
     }
 
 

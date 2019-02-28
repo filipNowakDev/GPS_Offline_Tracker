@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.services.DOMGpxReader;
-import com.filipnowakdev.gps_offline_tracker.services.FileWriterGpxFileService;
 import com.filipnowakdev.gps_offline_tracker.services.IGpxFileReader;
-import com.filipnowakdev.gps_offline_tracker.services.IGpxFileService;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -89,7 +87,7 @@ public class MapFragment extends Fragment
     {
         if(trackOverlayMode)
         {
-            List<GeoPoint> track = gpxFileReader.getListOfTrackpoints(trackOverlayed);
+            List<GeoPoint> track = gpxFileReader.getGeoPointsList(trackOverlayed);
             Polyline trackLine = new Polyline(map);
             trackLine.setTitle(trackOverlayed);
             trackLine.setPoints(track);

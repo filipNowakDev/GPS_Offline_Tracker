@@ -17,7 +17,6 @@ import com.filipnowakdev.gps_offline_tracker.services.FileWriterGpxFileService;
 import com.filipnowakdev.gps_offline_tracker.services.IGpxFileService;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Objects;
 
 public class TracksFragment extends Fragment
@@ -85,8 +84,14 @@ public class TracksFragment extends Fragment
                                 .beginTransaction()
                                 .replace(R.id.fragment_container, fragment)
                                 .commitAllowingStateLoss();
+                    } else if (item.getItemId() == R.id.track_details)
+                    {
+                        TrackDetailsFragment fragment = TrackDetailsFragment.newInstance(track.getName());
+                        Objects.requireNonNull(getActivity()).getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, fragment)
+                                .commitAllowingStateLoss();
                     }
-                    //TODO implement this stub
                     Toast.makeText(getContext(), "You selected the action : " + item.getTitle() + " - " + item.getItemId() + " filename " + track.getName(), Toast.LENGTH_SHORT).show();
                     return true;
                 });
@@ -102,16 +107,7 @@ public class TracksFragment extends Fragment
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnListFragmentInteractionListener
     {
         void onListFragmentInteraction(File track, View v);

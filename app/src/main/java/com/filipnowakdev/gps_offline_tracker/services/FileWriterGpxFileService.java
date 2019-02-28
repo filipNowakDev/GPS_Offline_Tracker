@@ -161,7 +161,7 @@ public class FileWriterGpxFileService implements IGpxFileService
         return Arrays.asList(folder.listFiles());
     }
 
-    private String convertTime(long time)
+    private static String convertTime(long time)
     {
         Date date = new Date(time);
         Format format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);

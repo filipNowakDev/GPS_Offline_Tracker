@@ -79,9 +79,9 @@ public class TrackDetailsFragment extends Fragment
         duration = trackpoints.get(trackpoints.size() - 1).getTime() - trackpoints.get(0).getTime();
         long allSecondsDuration = duration / 1000;
         long hours = (duration / 3600000);
-        duration -= duration / 3600000;
+        duration -= hours * 3600000;
         long minutes = duration / 60000;
-        duration -= duration / 60000;
+        duration -= minutes * 60000;
         long seconds = duration / 1000;
 
         Double avgMetersPerSecond = distance / allSecondsDuration;

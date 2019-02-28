@@ -27,7 +27,7 @@ public class MapFragment extends Fragment
 {
     private static final String TRACK_ARG = "TRACK_ARG";
     private boolean trackOverlayMode;
-    private String trackOverlayed;
+    private String trackOverlaid;
 
     private MapView map;
     private IMapController mapController;
@@ -66,7 +66,7 @@ public class MapFragment extends Fragment
         if (getArguments() != null)
         {
             trackOverlayMode = true;
-            trackOverlayed = getArguments().getString(TRACK_ARG);
+            trackOverlaid = getArguments().getString(TRACK_ARG);
         }
         initMap(v);
         initTrackOverlay();
@@ -87,9 +87,9 @@ public class MapFragment extends Fragment
     {
         if(trackOverlayMode)
         {
-            List<GeoPoint> track = gpxFileReader.getGeoPointsList(trackOverlayed);
+            List<GeoPoint> track = gpxFileReader.getGeoPointsList(trackOverlaid);
             Polyline trackLine = new Polyline(map);
-            trackLine.setTitle(trackOverlayed);
+            trackLine.setTitle(trackOverlaid);
             trackLine.setPoints(track);
             map.getOverlays().add(trackLine);
         }

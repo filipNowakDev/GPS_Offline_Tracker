@@ -1,16 +1,29 @@
 <resources>
-    <string name="app_name">GPS offline tracker</string>
+    <string name="app_name" translatable="false">GPS offline tracker</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Analysis</string>
+    <string name="title_tracks">Tracks</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_exit">Exit</string>
+    <string name="title_map">Map</string>
     <string name="get_coordinates_button_text">Get coords</string>
-    <string name="latitude_label">Lat: %1$f</string>
-    <string name="longitude_label">Lon: %1$f</string>
-    <string name="accuracy_label">Acc: %1$f m</string>
+    <string name="latitude_label">Lat: %1$.6f</string>
+    <string name="longitude_label">Lon: %1$.6f</string>
+    <string name="accuracy_label">Acc: %1$.2f m</string>
     <string name="start_recording_string">Start Recording</string>
     <string name="end_recording">End Recording</string>
     <string name="channel_name">com.filipnowakdev.gps_offline_tracker.notifications</string>
     <string name="channel_description">Offline gps tracker notification channel</string>
     <string name="title_activity_tracks">Tracks</string>
+    <string name="speed_label">Speed: %1$.2f m/s</string>
+    <string name="track_details">Details</string>
+    <string name="track_map">Show on map</string>
+    <string name="track_delete">Delete</string>
+
+    <string name="distance">Distance</string>
+    <string name="duration">Duration</string>
+    <string name="avg_speed">Avg. speed</string>
+
+    <string name="kilometers">%1$.2f km</string>
+    <string name="meters">%1$.2f m</string>
+    <string name="meters_per_second">%1$.2f m/s</string>
+    <string name="duration_field">%1$d:%2$d:%3$d</string>
 </resources>

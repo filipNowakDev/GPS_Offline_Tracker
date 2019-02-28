@@ -2,13 +2,17 @@ package com.filipnowakdev.gps_offline_tracker.services;
 
 import android.content.Context;
 import android.location.Location;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class FileWriterGpxFileService implements IGpxFileService
 {
@@ -30,7 +34,7 @@ public class FileWriterGpxFileService implements IGpxFileService
                     "    </trk>\n" +
                     "</gpx>";
     private static final String TRACKS_TEMP_DIR = "tracks/temp/";
-    private static final String TRACKS_RECORDINGS_DIR = "tracks/recordings/";
+    static final String TRACKS_RECORDINGS_DIR = "tracks/recordings/";
 
 
     private Context context;
@@ -122,13 +126,10 @@ public class FileWriterGpxFileService implements IGpxFileService
             );
             tempWriter.flush();
             tempWriter.close();
-            System.out.println("NEW TRKPT");
 
         } catch (IOException e)
         {
             e.printStackTrace();
-            System.out.println("WRONG TRKPT NOT ADDED");
-
         }
     }
 
@@ -157,13 +158,10 @@ public class FileWriterGpxFileService implements IGpxFileService
     public List<File> getListOfFiles()
     {
         File folder = new File(context.getExternalFilesDir(null), TRACKS_RECORDINGS_DIR);
-        if (folder != null)
-            return Arrays.asList(folder.listFiles());
-        else
-            return new ArrayList<>();
+        return Arrays.asList(folder.listFiles());
     }
 
-    private String convertTime(long time)
+    private static String convertTime(long time)
     {
         Date date = new Date(time);
         Format format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);

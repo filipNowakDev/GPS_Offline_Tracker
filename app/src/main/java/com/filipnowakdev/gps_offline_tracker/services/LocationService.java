@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,19 +14,19 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
+
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.FileWriterGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileService;
 
 public class LocationService extends Service implements LocationListener
 {
-    public static final String BROADCAST_LOCATION_UPDATE = "com.filipnowakdev.gps_offline_tracker.LOCATION_UPDATE";
 
     private static final long MIN_DISTANCE_CHANGE = 10;//meters
     private static final long MIN_UPDATE_INTERVAL = 100; //milliseconds
 
 
     private LocationManager locationManager;
-    private LocalBroadcastManager localBroadcastManager;
 
     private IGpxFileService gpxFileService;
     private boolean isRecording;
@@ -103,7 +104,6 @@ public class LocationService extends Service implements LocationListener
     @Override
     public IBinder onBind(Intent intent)
     {
-        initLocationManager();
         return binder;
     }
 
@@ -111,15 +111,9 @@ public class LocationService extends Service implements LocationListener
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         super.onStartCommand(intent, flags, startId);
-        initBroadcastManager();
         initLocationManager();
         initGpxManager();
         return START_REDELIVER_INTENT;
-    }
-
-    private void initBroadcastManager()
-    {
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
@@ -131,14 +125,12 @@ public class LocationService extends Service implements LocationListener
     @Override
     public void onCreate()
     {
-        initLocationManager();
         super.onCreate();
     }
 
     @Override
     public void onLocationChanged(Location location)
     {
-        localBroadcastManager.sendBroadcast(new Intent(BROADCAST_LOCATION_UPDATE));
         if (isRecording)
             gpxFileService.addNewTrackpoint(location);
     }
@@ -146,20 +138,16 @@ public class LocationService extends Service implements LocationListener
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle)
     {
-
-
     }
 
     @Override
     public void onProviderEnabled(String s)
     {
-
     }
 
     @Override
     public void onProviderDisabled(String s)
     {
-
     }
 
     public class LocationServiceBinder extends Binder

@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.services;
+package com.filipnowakdev.gps_offline_tracker.gpx_utils;
 
 import android.location.Location;
 

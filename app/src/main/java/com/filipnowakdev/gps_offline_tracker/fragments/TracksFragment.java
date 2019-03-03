@@ -10,14 +10,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.services.FileWriterGpxFileService;
-import com.filipnowakdev.gps_offline_tracker.services.IGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.FileWriterGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileService;
 
 import java.io.File;
 import java.util.Objects;
+
+import androidx.navigation.Navigation;
 
 public class TracksFragment extends Fragment
 {
@@ -79,20 +80,18 @@ public class TracksFragment extends Fragment
                 {
                     if (item.getItemId() == R.id.track_map)
                     {
-                        MapFragment fragment = MapFragment.newInstance(track.getName());
-                        Objects.requireNonNull(getActivity()).getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .commitAllowingStateLoss();
+                        Bundle args = new Bundle();
+                        args.putString(MapFragment.TRACK_NAME, track.getName());
+                        Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
+                                .navigate(R.id.action_tracks_to_map, args);
                     } else if (item.getItemId() == R.id.track_details)
                     {
-                        TrackDetailsFragment fragment = TrackDetailsFragment.newInstance(track.getName());
-                        Objects.requireNonNull(getActivity()).getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .commitAllowingStateLoss();
+                        Bundle args = new Bundle();
+                        args.putString(TrackDetailsFragment.TRACK_NAME, track.getName());
+                        Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
+                                .navigate(R.id.action_tracks_to_details, args);
+
                     }
-                    Toast.makeText(getContext(), "You selected the action : " + item.getTitle() + " - " + item.getItemId() + " filename " + track.getName(), Toast.LENGTH_SHORT).show();
                     return true;
                 });
                 popup.show();

@@ -1,6 +1,10 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,9 +17,14 @@ import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 
-public class HomeFragment extends Fragment
+public class HomeFragment extends Fragment implements LocationListener
 {
-
+    public enum BUTTON_STATE
+    {
+        RECORDING,
+        NOT_RECORDING,
+        LOCATION_UNAVAILABLE
+    }
 
     private TextView latView;
     private TextView lonView;
@@ -23,12 +32,21 @@ public class HomeFragment extends Fragment
     private TextView speedView;
     private Button startRecordingButton;
     private Button endRecordingButton;
-    private boolean recordingState;
 
     private OnButtonClickListener onButtonClickCallback;
-    private Location lastLocation;
+    private RecordingStateHelper recordingStateHelper;
+    LocationManager locationManager;
 
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        onButtonClickCallback = (OnButtonClickListener) context;
+        recordingStateHelper = (RecordingStateHelper) context;
+    }
 
+    @SuppressLint("MissingPermission")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState)
@@ -36,12 +54,16 @@ public class HomeFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         initRecordingButtons(v);
         initCoordinatesBoxes(v);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         return v;
     }
 
-    public void setOnButtonClickListener(OnButtonClickListener onButtonClickCallback)
+    @Override
+    public void onDestroyView()
     {
-        this.onButtonClickCallback = onButtonClickCallback;
+        super.onDestroyView();
+        locationManager.removeUpdates(this);
     }
 
     @Override
@@ -53,8 +75,14 @@ public class HomeFragment extends Fragment
 
     private void restoreUI()
     {
-        setRecordingButtonsActivated();
-        updateLocation();
+        if (!recordingStateHelper.isLocationAvailable())
+            setRecordingButtonsActivated(BUTTON_STATE.LOCATION_UNAVAILABLE);
+
+        if (recordingStateHelper.isRecordingActive())
+            setRecordingButtonsActivated(BUTTON_STATE.RECORDING);
+
+        else
+            setRecordingButtonsActivated(BUTTON_STATE.NOT_RECORDING);
     }
 
 
@@ -69,29 +97,28 @@ public class HomeFragment extends Fragment
     }
 
 
-    public void setRecordingButtonsActivated(boolean isRecording)
+
+    public void setRecordingButtonsActivated(BUTTON_STATE buttonState)
     {
-        recordingState = isRecording;
-        if (isRecording)
+        if (buttonState == BUTTON_STATE.RECORDING)
         {
             startRecordingButton.setEnabled(false);
             endRecordingButton.setEnabled(true);
-        } else
+        } else if (buttonState == BUTTON_STATE.NOT_RECORDING)
         {
             startRecordingButton.setEnabled(true);
             endRecordingButton.setEnabled(false);
         }
+        else if (buttonState == BUTTON_STATE.LOCATION_UNAVAILABLE)
+        {
+            startRecordingButton.setEnabled(false);
+            endRecordingButton.setEnabled(false);
+        }
     }
 
-    public void setRecordingButtonsActivated()
-    {
-        setRecordingButtonsActivated(recordingState);
-    }
 
-
-    public void updateLocation(Location location)
+    private void updateLocation(Location location)
     {
-        this.lastLocation = location;
         if (location != null)
         {
             latView.setText(getString(R.string.latitude_label, location.getLatitude()));
@@ -101,13 +128,6 @@ public class HomeFragment extends Fragment
         }
     }
 
-    public void updateLocation()
-    {
-        if (lastLocation != null)
-        {
-            updateLocation(lastLocation);
-        }
-    }
 
     private void initCoordinatesBoxes(View v)
     {
@@ -117,20 +137,46 @@ public class HomeFragment extends Fragment
         speedView = v.findViewById(R.id.speed_box);
     }
 
-    public void setLastLocation(Location lastLocation)
+    @Override
+    public void onLocationChanged(Location location)
     {
-        this.lastLocation = lastLocation;
+        updateLocation(location);
+        if(recordingStateHelper.isRecordingActive())
+            setRecordingButtonsActivated(BUTTON_STATE.RECORDING);
+        else
+            setRecordingButtonsActivated(BUTTON_STATE.NOT_RECORDING);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras)
+    {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider)
+    {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider)
+    {
+        if (provider.equals(LocationManager.GPS_PROVIDER))
+            setRecordingButtonsActivated(BUTTON_STATE.LOCATION_UNAVAILABLE);
     }
 
     public interface OnButtonClickListener
     {
-        boolean onStartClick();
+        BUTTON_STATE onStartClick();
 
-        boolean onEndClick();
+        BUTTON_STATE onEndClick();
     }
 
-    public void setRecordingState(boolean recordingState)
+    public interface RecordingStateHelper
     {
-        this.recordingState = recordingState;
+        boolean isRecordingActive();
+        boolean isLocationAvailable();
     }
+
 }

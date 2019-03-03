@@ -1,7 +1,11 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -9,11 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.filipnowakdev.gps_offline_tracker.BuildConfig;
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.services.DOMGpxReader;
-import com.filipnowakdev.gps_offline_tracker.services.IGpxFileReader;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -23,31 +29,30 @@ import org.osmdroid.views.overlay.Polyline;
 import java.util.List;
 
 
-public class MapFragment extends Fragment
+public class MapFragment extends Fragment implements LocationListener
 {
-    private static final String TRACK_ARG = "TRACK_ARG";
+    public static final String TRACK_NAME = "TRACK_NAME";
     private boolean trackOverlayMode;
     private String trackOverlaid;
 
     private MapView map;
     private IMapController mapController;
-    private Location lastLocation;
     private IGpxFileReader gpxFileReader;
 
     private Marker currentPositionMarker;
+    private LocationManager locationManager;
 
     public MapFragment()
     {
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance(String trackFilename)
+
+    @Override
+    public void onAttach(Context context)
     {
-        MapFragment fragment = new MapFragment();
-        Bundle args = new Bundle();
-        args.putString(TRACK_ARG, trackFilename);
-        fragment.setArguments(args);
-        return fragment;
+        super.onAttach(context);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     @Override
@@ -55,9 +60,11 @@ public class MapFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         gpxFileReader = new DOMGpxReader(getContext());
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
     }
 
 
+    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -66,14 +73,23 @@ public class MapFragment extends Fragment
         if (getArguments() != null)
         {
             trackOverlayMode = true;
-            trackOverlaid = getArguments().getString(TRACK_ARG);
+            trackOverlaid = getArguments().getString(TRACK_NAME);
         }
         initMap(v);
         initTrackOverlay();
         initLocationMarker();
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         return v;
     }
 
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        locationManager.removeUpdates(this);
+
+    }
 
     @Override
     public void onPause()
@@ -85,13 +101,14 @@ public class MapFragment extends Fragment
 
     private void initTrackOverlay()
     {
-        if(trackOverlayMode)
+        if (trackOverlayMode)
         {
             List<GeoPoint> track = gpxFileReader.getGeoPointsList(trackOverlaid);
             Polyline trackLine = new Polyline(map);
             trackLine.setTitle(trackOverlaid);
             trackLine.setPoints(track);
             map.getOverlays().add(trackLine);
+            mapController.setCenter(track.get(track.size()/2));
         }
     }
 
@@ -119,31 +136,43 @@ public class MapFragment extends Fragment
     {
         super.onResume();
         map.onResume();
-        updateLocation();
     }
 
 
     public void updateLocation(Location location)
     {
-        this.lastLocation = location;
-        GeoPoint curPos = new GeoPoint(location.getLatitude(), location.getLongitude());
-        mapController.setCenter(curPos);
-        currentPositionMarker.setPosition(curPos);
-        map.invalidate();
-    }
-
-
-    public void updateLocation()
-    {
-        if (lastLocation != null)
+        if(location != null)
         {
-            updateLocation(lastLocation);
+            GeoPoint curPos = new GeoPoint(location.getLatitude(), location.getLongitude());
+            if (!trackOverlayMode)
+                mapController.setCenter(curPos);
+            currentPositionMarker.setPosition(curPos);
+            map.invalidate();
         }
     }
 
-    public void setLastLocation(Location lastLocation)
+
+    @Override
+    public void onLocationChanged(Location location)
     {
-        this.lastLocation = lastLocation;
+        updateLocation(location);
     }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras)
+    {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider)
+    {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider)
+    {
+
+    }
 }

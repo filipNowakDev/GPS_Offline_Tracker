@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.services;
+package com.filipnowakdev.gps_offline_tracker.gpx_utils;
 
 import android.content.Context;
 import android.location.Location;
@@ -9,7 +9,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.io.File;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -62,7 +61,6 @@ public class DOMGpxReader implements IGpxFileReader
         }
         return null;
     }
-
 
 
     public List<Location> getLocationList(String filename)

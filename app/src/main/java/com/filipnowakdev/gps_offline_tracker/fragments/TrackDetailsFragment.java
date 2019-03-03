@@ -10,37 +10,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.services.DOMGpxReader;
-import com.filipnowakdev.gps_offline_tracker.services.IGpxFileReader;
-
-import org.osmdroid.util.GeoPoint;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 
 import java.util.List;
 
 
 public class TrackDetailsFragment extends Fragment
 {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String TRACK_NAME = "track_name";
+    public static final String TRACK_NAME = "track_name";
 
     private String track;
     private IGpxFileReader gpxFileReader;
-    private TextView distanceView;
-    private TextView durationView;
-    private TextView avgSpeedView;
 
     public TrackDetailsFragment()
     {
     }
 
-    public static TrackDetailsFragment newInstance(String filename)
-    {
-        TrackDetailsFragment fragment = new TrackDetailsFragment();
-        Bundle args = new Bundle();
-        args.putString(TRACK_NAME, filename);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -64,9 +50,9 @@ public class TrackDetailsFragment extends Fragment
 
     private void initFields(View v)
     {
-        distanceView = v.findViewById(R.id.distance_field);
-        durationView = v.findViewById(R.id.duration_field);
-        avgSpeedView = v.findViewById(R.id.avg_speed_field);
+        TextView distanceView = v.findViewById(R.id.distance_field);
+        TextView durationView = v.findViewById(R.id.duration_field);
+        TextView avgSpeedView = v.findViewById(R.id.avg_speed_field);
         double distance = 0;
         long duration;
         List<Location> trackpoints = gpxFileReader.getLocationList(track);
@@ -91,7 +77,7 @@ public class TrackDetailsFragment extends Fragment
         else
             distanceView.setText(getString(R.string.meters, distance));
 
-        avgSpeedView.setText(getString(R.string.meters_per_second, avgMetersPerSecond));
+        avgSpeedView.setText(getString(R.string.kilometers_per_hour, avgMetersPerSecond * 3.6));
         durationView.setText(getString(R.string.duration_field, hours, minutes, seconds));
     }
 

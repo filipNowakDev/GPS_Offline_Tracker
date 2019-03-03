@@ -1,19 +1,15 @@
 package com.filipnowakdev.gps_offline_tracker.activities;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -22,47 +18,22 @@ import android.widget.Toast;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
-import com.filipnowakdev.gps_offline_tracker.fragments.MapFragment;
-import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
+
+public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper
 {
 
     private LocationService locationService;
     private boolean isLocationServiceBound;
     private ServiceConnection serviceConnection;
-    private LocalBroadcastManager localBroadcastManager;
-
-    private BroadcastReceiver locationBroadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            updateFragmentsLocation();
-
-        }
-    };
-
+    Intent locationServiceIntent;
 
     private NotificationService notificationService;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
-            = item ->
-    {
-        switch (item.getItemId())
-        {
-            case R.id.navigation_home:
-                return loadFragment(new HomeFragment());
-            case R.id.navigation_tracks:
-                return loadFragment(new TracksFragment());
-            case R.id.navigation_map:
-                return loadFragment(new MapFragment());
-        }
-        return false;
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,18 +49,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     {
         super.onPause();
         this.unbindService(serviceConnection);
-        localBroadcastManager.unregisterReceiver(locationBroadcastReceiver);
+        isLocationServiceBound = false;
+        if (!locationService.isRecordingActive())
+        {
+            this.stopService(locationServiceIntent);
+        }
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        initBroadcastManager();
         initNotificationService();
         initLocationService();
-        registerBroadcastReceiver();
-        loadFragment(new HomeFragment());
     }
 
     private void getPermissions()
@@ -112,27 +84,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private void initNavigation()
     {
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
-    }
-
-    private boolean loadFragment(Fragment fragment)
-    {
-        if (fragment != null)
-        {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commitAllowingStateLoss();
-            return true;
-        }
-        return false;
+        NavController navController = Navigation.findNavController(this, R.id.navigation_container);
+        BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
+        NavigationUI.setupWithNavController(navigation, navController);
     }
 
 
     private void initLocationService()
     {
-        Intent locationServiceIntent = new Intent(this.getApplicationContext(), LocationService.class);
+        locationServiceIntent = new Intent(this.getApplicationContext(), LocationService.class);
         this.startService(locationServiceIntent);
 
 
@@ -146,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
                     LocationService.LocationServiceBinder locationServiceBinder = (LocationService.LocationServiceBinder) iBinder;
                     locationService = locationServiceBinder.getService();
                     isLocationServiceBound = true;
-                    updateFragmentsLocation();
                 }
 
                 @Override
@@ -165,25 +124,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         toast.show();
     }
 
-    private void initBroadcastManager()
-    {
-        localBroadcastManager = LocalBroadcastManager.getInstance(this.getApplicationContext());
-    }
-
-    private void registerBroadcastReceiver()
-    {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(LocationService.BROADCAST_LOCATION_UPDATE);
-        localBroadcastManager.registerReceiver(locationBroadcastReceiver, filter);
-    }
-
     private void initNotificationService()
     {
         this.notificationService = new NotificationService(this);
     }
 
     @Override
-    public boolean onStartClick()
+    public HomeFragment.BUTTON_STATE onStartClick()
     {
         if (isLocationServiceBound)
         {
@@ -191,17 +138,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             {
                 locationService.startRecording();
                 notificationService.displayRecordingNotification();
+                return HomeFragment.BUTTON_STATE.RECORDING;
             } else
             {
                 displayError();
+                return HomeFragment.BUTTON_STATE.NOT_RECORDING;
             }
-            return true;
         }
-        return false;
+        return HomeFragment.BUTTON_STATE.LOCATION_UNAVAILABLE;
     }
 
     @Override
-    public boolean onEndClick()
+    public HomeFragment.BUTTON_STATE onEndClick()
     {
         if (isLocationServiceBound)
         {
@@ -222,43 +170,21 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             });
             builder.show();
         }
+        return HomeFragment.BUTTON_STATE.NOT_RECORDING;
+    }
+
+
+    @Override
+    public boolean isRecordingActive()
+    {
+        if (locationService != null)
+            return locationService.isRecordingActive();
         return false;
     }
 
     @Override
-    public void onAttachFragment(Fragment fragment)
+    public boolean isLocationAvailable()
     {
-        if (fragment instanceof HomeFragment)
-        {
-            HomeFragment homeFragment = (HomeFragment) fragment;
-            homeFragment.setOnButtonClickListener(this);
-            if (locationService != null)
-            {
-                homeFragment.setRecordingState(locationService.isRecordingActive());
-                homeFragment.setLastLocation(locationService.getLocation());
-            }
-        } else if (fragment instanceof MapFragment)
-        {
-            MapFragment mapFragment = (MapFragment) fragment;
-            if (locationService != null)
-            {
-                mapFragment.setLastLocation(locationService.getLocation());
-            }
-        }
-    }
-
-
-    private void updateFragmentsLocation()
-    {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
-        if (fragment instanceof HomeFragment)
-        {
-            ((HomeFragment) fragment).updateLocation(locationService.getLocation());
-            ((HomeFragment) fragment).setRecordingButtonsActivated(locationService.isRecordingActive());
-        } else if (fragment instanceof MapFragment)
-        {
-            ((MapFragment) fragment).updateLocation(locationService.getLocation());
-        }
+        return locationService != null && locationService.getLocation() != null;
     }
 }

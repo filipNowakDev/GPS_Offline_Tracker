@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment implements LocationListener
         if (!recordingStateHelper.isLocationAvailable())
             setRecordingButtonsActivated(BUTTON_STATE.LOCATION_UNAVAILABLE);
 
-        if (recordingStateHelper.isRecordingActive())
+        else if (recordingStateHelper.isRecordingActive())
             setRecordingButtonsActivated(BUTTON_STATE.RECORDING);
 
         else
@@ -129,12 +129,17 @@ public class HomeFragment extends Fragment implements LocationListener
     }
 
 
+    @SuppressLint("MissingPermission")
     private void initCoordinatesBoxes(View v)
     {
         latView = v.findViewById(R.id.latitude_box);
         lonView = v.findViewById(R.id.longitude_box);
         accView = v.findViewById(R.id.accuracy_box);
         speedView = v.findViewById(R.id.speed_box);
+        if(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null)
+        {
+            updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+        }
     }
 
     @Override

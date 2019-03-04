@@ -21,6 +21,11 @@ import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -156,8 +161,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Track name: ");
 
+            Date currentTime = Calendar.getInstance().getTime();
+            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yy_HH_mm_SS", Locale.US);
+            String date = DATE_FORMAT.format(currentTime);
+
             final EditText input = new EditText(this);
             input.setInputType(InputType.TYPE_CLASS_TEXT);
+            input.setText(date);
             builder.setView(input);
 
             builder.setPositiveButton("OK", (dialog, which) ->

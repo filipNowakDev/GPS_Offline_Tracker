@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment.OnListFragmentInteractionListener;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -43,8 +44,8 @@ public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFile
         holder.file = fileList.get(position);
         holder.filenameView.setText(fileList.get(position).getName().replaceFirst("[.][^.]+$", ""));
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
-        holder.creationDateView.setText(simpleDateFormat.format(fileList.get(position).lastModified()));
+        DOMGpxReader reader = new DOMGpxReader();
+        holder.creationDateView.setText(reader.getFormattedFileCreationTime(fileList.get(position)));
 
         holder.view.setOnClickListener(v ->
         {

@@ -97,7 +97,6 @@ public class HomeFragment extends Fragment implements LocationListener
     }
 
 
-
     public void setRecordingButtonsActivated(BUTTON_STATE buttonState)
     {
         if (buttonState == BUTTON_STATE.RECORDING)
@@ -108,8 +107,7 @@ public class HomeFragment extends Fragment implements LocationListener
         {
             startRecordingButton.setEnabled(true);
             endRecordingButton.setEnabled(false);
-        }
-        else if (buttonState == BUTTON_STATE.LOCATION_UNAVAILABLE)
+        } else if (buttonState == BUTTON_STATE.LOCATION_UNAVAILABLE)
         {
             startRecordingButton.setEnabled(false);
             endRecordingButton.setEnabled(false);
@@ -136,7 +134,7 @@ public class HomeFragment extends Fragment implements LocationListener
         lonView = v.findViewById(R.id.longitude_box);
         accView = v.findViewById(R.id.accuracy_box);
         speedView = v.findViewById(R.id.speed_box);
-        if(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null)
+        if (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null)
         {
             updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         }
@@ -146,7 +144,7 @@ public class HomeFragment extends Fragment implements LocationListener
     public void onLocationChanged(Location location)
     {
         updateLocation(location);
-        if(recordingStateHelper.isRecordingActive())
+        if (recordingStateHelper.isRecordingActive())
             setRecordingButtonsActivated(BUTTON_STATE.RECORDING);
         else
             setRecordingButtonsActivated(BUTTON_STATE.NOT_RECORDING);
@@ -181,6 +179,7 @@ public class HomeFragment extends Fragment implements LocationListener
     public interface RecordingStateHelper
     {
         boolean isRecordingActive();
+
         boolean isLocationAvailable();
     }
 

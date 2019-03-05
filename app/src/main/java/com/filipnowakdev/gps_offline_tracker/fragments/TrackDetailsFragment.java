@@ -1,5 +1,6 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
+import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 
 import java.util.List;
 
@@ -22,11 +24,18 @@ public class TrackDetailsFragment extends Fragment
 
     private String track;
     private IGpxFileReader gpxFileReader;
+    private ToolbarTitleUpdater toolbarTitleUpdater;
 
     public TrackDetailsFragment()
     {
     }
 
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+        toolbarTitleUpdater = (ToolbarTitleUpdater) context;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -35,6 +44,7 @@ public class TrackDetailsFragment extends Fragment
         if (getArguments() != null)
         {
             track = getArguments().getString(TRACK_NAME);
+            toolbarTitleUpdater.updateToolbarTitle(track + " details");
         }
         gpxFileReader = new DOMGpxReader(getContext());
     }
@@ -70,7 +80,7 @@ public class TrackDetailsFragment extends Fragment
         duration -= minutes * 60000;
         long seconds = duration / 1000;
 
-        Double avgMetersPerSecond = distance / allSecondsDuration;
+        double avgMetersPerSecond = distance / allSecondsDuration;
 
         if (distance >= 1000.0)
             distanceView.setText(getString(R.string.kilometers, distance / 1000));
@@ -80,6 +90,5 @@ public class TrackDetailsFragment extends Fragment
         avgSpeedView.setText(getString(R.string.kilometers_per_hour, avgMetersPerSecond * 3.6));
         durationView.setText(getString(R.string.duration_field, hours, minutes, seconds));
     }
-
 
 }

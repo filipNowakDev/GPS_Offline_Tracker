@@ -12,12 +12,14 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
+import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
 
@@ -25,12 +27,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper
+public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper, ToolbarTitleUpdater
 {
 
     private LocationService locationService;
@@ -39,6 +43,14 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     Intent locationServiceIntent;
 
     private NotificationService notificationService;
+    private NavController navController;
+    private AppBarConfiguration appBarConfiguration;
+
+    @Override
+    public boolean onSupportNavigateUp()
+    {
+        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -89,9 +101,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private void initNavigation()
     {
-        NavController navController = Navigation.findNavController(this, R.id.navigation_container);
+        navController = Navigation.findNavController(this, R.id.navigation_container);
         BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
+        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigation, navController);
+
     }
 
 
@@ -196,5 +214,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     public boolean isLocationAvailable()
     {
         return locationService != null && locationService.getLocation() != null;
+    }
+
+    @Override
+    public void updateToolbarTitle(String title)
+    {
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }
 }

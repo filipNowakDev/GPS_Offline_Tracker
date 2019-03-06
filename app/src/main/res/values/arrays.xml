@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="units_speed_entries">
+        <item>@string/kilometers_per_hour_unit</item>
+        <item>@string/meters_per_second_unit</item>
+    </array>
+    <array name="units_speed_entry_values">
+        <item>@string/kilometers_per_hour</item>
+        <item>@string/meters_per_second</item>
+    </array>
+
+</resources>

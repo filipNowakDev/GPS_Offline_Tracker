@@ -46,4 +46,15 @@
         android:name="com.filipnowakdev.gps_offline_tracker.fragments.TrackDetailsFragment"
         android:label="@string/track_details"
         tools:layout="@layout/fragment_track_details" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.SettingsFragment"
+        android:label="@string/toolbar_settings" />
+    <action
+        android:id="@+id/action_settings"
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
 </navigation>

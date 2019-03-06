@@ -2,13 +2,16 @@ package com.filipnowakdev.gps_offline_tracker.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
+
+import java.util.Objects;
 
 public class HomeFragment extends Fragment implements LocationListener
 {
@@ -35,12 +40,14 @@ public class HomeFragment extends Fragment implements LocationListener
 
     private OnButtonClickListener onButtonClickCallback;
     private RecordingStateHelper recordingStateHelper;
-    LocationManager locationManager;
+    private LocationManager locationManager;
+    private SharedPreferences sharedPreferences;
 
     @Override
-    public void onAttach(Context context)
+    public void onAttach(@NonNull Context context)
     {
         super.onAttach(context);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         onButtonClickCallback = (OnButtonClickListener) context;
         recordingStateHelper = (RecordingStateHelper) context;
@@ -97,7 +104,7 @@ public class HomeFragment extends Fragment implements LocationListener
     }
 
 
-    public void setRecordingButtonsActivated(BUTTON_STATE buttonState)
+    private void setRecordingButtonsActivated(BUTTON_STATE buttonState)
     {
         if (buttonState == BUTTON_STATE.RECORDING)
         {
@@ -122,7 +129,12 @@ public class HomeFragment extends Fragment implements LocationListener
             latView.setText(getString(R.string.latitude_label, location.getLatitude()));
             lonView.setText(getString(R.string.longitude_label, location.getLongitude()));
             accView.setText(getString(R.string.accuracy_label, location.getAccuracy()));
-            speedView.setText(getString(R.string.speed_label, location.getSpeed()));
+            String speedFormat = sharedPreferences.getString("unit_speed", getString(R.string.kilometers_per_hour));
+            if (Objects.equals(speedFormat, getString(R.string.kilometers_per_hour)))
+                speedView.setText(getString(R.string.speed_label_kph, location.getSpeed()));
+
+            else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
+                      speedView.setText(getString(R.string.speed_label_mps, location.getSpeed()));
         }
     }
 

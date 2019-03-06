@@ -1,10 +1,14 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,26 +20,36 @@ import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 
 import java.util.List;
+import java.util.Objects;
 
 
 public class TrackDetailsFragment extends Fragment
 {
-    public static final String TRACK_NAME = "track_name";
+    static final String TRACK_NAME = "track_name";
     private static final double MIN_MOVEMENT_SPEED = 3.0;
+    private static final double MPS_TO_KPH = 3.6;
 
     private String track;
     private IGpxFileReader gpxFileReader;
     private ToolbarTitleUpdater toolbarTitleUpdater;
+    private TextView distanceView;
+    private TextView durationView;
+    private TextView avgSpeedView;
+    private TextView maxSpeedView;
+    private TextView avgMovSpeedView;
+    private SharedPreferences sharedPreferences;
 
     public TrackDetailsFragment()
     {
     }
 
     @Override
-    public void onAttach(Context context)
+    public void onAttach(@NonNull Context context)
     {
         super.onAttach(context);
         toolbarTitleUpdater = (ToolbarTitleUpdater) context;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     @Override
@@ -56,16 +70,13 @@ public class TrackDetailsFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_track_details, container, false);
         initFields(v);
+        calculateData();
         return v;
     }
 
-    private void initFields(View v)
+    private void calculateData()
     {
-        TextView distanceView = v.findViewById(R.id.distance_field);
-        TextView durationView = v.findViewById(R.id.duration_field);
-        TextView avgSpeedView = v.findViewById(R.id.avg_speed_field);
-        TextView maxSpeedView = v.findViewById(R.id.max_speed_field);
-        TextView avgMovSpeedView = v.findViewById(R.id.avg_mov_speed_field);
+
         double distance = 0;
         long duration;
         double avgMoveSpeed;
@@ -106,15 +117,46 @@ public class TrackDetailsFragment extends Fragment
         avgMoveSpeed = moveDistance / moveDuration;
 
 
+        setFieldsValues(distance, avgMoveSpeed, maxSpeed, hours, minutes, seconds, avgMetersPerSecond);
+    }
+
+    private void setFieldsValues(double distance, double avgMoveSpeed, double maxSpeed, long hours, long minutes, long seconds, double avgMetersPerSecond)
+    {
+
+
         if (distance >= 1000.0)
             distanceView.setText(getString(R.string.kilometers, distance / 1000));
         else
             distanceView.setText(getString(R.string.meters, distance));
 
-        avgSpeedView.setText(getString(R.string.kilometers_per_hour, avgMetersPerSecond * 3.6));
-        maxSpeedView.setText(getString(R.string.kilometers_per_hour, maxSpeed * 3.6));
+        String speedFormat = sharedPreferences.getString("unit_speed", getString(R.string.kilometers_per_hour));
+        if (Objects.equals(speedFormat, getString(R.string.kilometers_per_hour)))
+        {
+            avgMetersPerSecond *= MPS_TO_KPH;
+            maxSpeed *= MPS_TO_KPH;
+            avgMoveSpeed *= MPS_TO_KPH;
+            avgSpeedView.setText(getString(R.string.kilometers_per_hour, avgMetersPerSecond));
+            maxSpeedView.setText(getString(R.string.kilometers_per_hour, maxSpeed));
+            avgMovSpeedView.setText(getString(R.string.kilometers_per_hour, avgMoveSpeed));
+        }
+        else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
+        {
+            avgSpeedView.setText(getString(R.string.meters_per_second, avgMetersPerSecond));
+            maxSpeedView.setText(getString(R.string.meters_per_second, maxSpeed));
+            avgMovSpeedView.setText(getString(R.string.meters_per_second, avgMoveSpeed));
+        }
+
         durationView.setText(getString(R.string.duration_field, hours, minutes, seconds));
-        avgMovSpeedView.setText(getString(R.string.kilometers_per_hour, avgMoveSpeed * 3.6));
+
+    }
+
+    private void initFields(View v)
+    {
+        distanceView = v.findViewById(R.id.distance_field);
+        durationView = v.findViewById(R.id.duration_field);
+        avgSpeedView = v.findViewById(R.id.avg_speed_field);
+        maxSpeedView = v.findViewById(R.id.max_speed_field);
+        avgMovSpeedView = v.findViewById(R.id.avg_mov_speed_field);
     }
 
 }

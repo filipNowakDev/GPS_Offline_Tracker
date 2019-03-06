@@ -78,7 +78,7 @@ public class MapFragment extends Fragment implements LocationListener
         {
             trackOverlayMode = true;
             trackOverlaid = getArguments().getString(TRACK_NAME);
-            toolbarTitleUpdater.updateToolbarTitle(trackOverlaid + " on map");
+            toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_on_map, trackOverlaid));
         }
         initMap(v);
         initTrackOverlay();

@@ -45,7 +45,7 @@ public class TrackDetailsFragment extends Fragment
         if (getArguments() != null)
         {
             track = getArguments().getString(TRACK_NAME);
-            toolbarTitleUpdater.updateToolbarTitle(track + " details");
+            toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, track));
         }
         gpxFileReader = new DOMGpxReader(getContext());
     }

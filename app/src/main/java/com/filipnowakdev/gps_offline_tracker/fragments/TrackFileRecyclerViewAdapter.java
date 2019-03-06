@@ -1,7 +1,7 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +9,10 @@ import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment.OnListFragmentInteractionListener;
+import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 
 public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFileRecyclerViewAdapter.ViewHolder>
@@ -43,8 +42,8 @@ public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFile
         holder.file = fileList.get(position);
         holder.filenameView.setText(fileList.get(position).getName().replaceFirst("[.][^.]+$", ""));
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
-        holder.creationDateView.setText(simpleDateFormat.format(fileList.get(position).lastModified()));
+        DOMGpxReader reader = new DOMGpxReader();
+        holder.creationDateView.setText(reader.getFormattedFileCreationTime(fileList.get(position)));
 
         holder.view.setOnClickListener(v ->
         {

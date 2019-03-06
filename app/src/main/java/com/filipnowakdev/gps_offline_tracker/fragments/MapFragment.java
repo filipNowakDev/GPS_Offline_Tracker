@@ -7,8 +7,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +17,7 @@ import com.filipnowakdev.gps_offline_tracker.BuildConfig;
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
+import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -42,6 +43,8 @@ public class MapFragment extends Fragment implements LocationListener
     private Marker currentPositionMarker;
     private LocationManager locationManager;
 
+    private ToolbarTitleUpdater toolbarTitleUpdater;
+
     public MapFragment()
     {
         // Required empty public constructor
@@ -53,6 +56,7 @@ public class MapFragment extends Fragment implements LocationListener
     {
         super.onAttach(context);
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        toolbarTitleUpdater = (ToolbarTitleUpdater) context;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class MapFragment extends Fragment implements LocationListener
         {
             trackOverlayMode = true;
             trackOverlaid = getArguments().getString(TRACK_NAME);
+            toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_on_map, trackOverlaid));
         }
         initMap(v);
         initTrackOverlay();

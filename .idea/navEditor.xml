@@ -8,6 +8,11 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
+                  <entry key="action_settings">
+                    <value>
+                      <LayoutPositions />
+                    </value>
+                  </entry>
                   <entry key="homeFragment">
                     <value>
                       <LayoutPositions>
@@ -19,12 +24,12 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="home_to_map">
+                            <entry key="action_home_to_map">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
-                            <entry key="home_to_tracks">
+                            <entry key="action_home_to_tracks">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -41,6 +46,18 @@
                           <Point>
                             <option name="x" value="683" />
                             <option name="y" value="265" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="settingsFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="381" />
+                            <option name="y" value="437" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -69,12 +86,12 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_tracksFragment_to_mapFragment">
+                            <entry key="action_tracks_to_details">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
-                            <entry key="action_tracksFragment_to_trackDetailsFragment">
+                            <entry key="action_tracks_to_map">
                               <value>
                                 <LayoutPositions />
                               </value>

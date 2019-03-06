@@ -29,6 +29,10 @@ public class DOMGpxReader implements IGpxFileReader
         this.context = context;
     }
 
+    public DOMGpxReader()
+    {
+    }
+
     @Override
     public List<GeoPoint> getGeoPointsList(String filename)
     {
@@ -101,6 +105,58 @@ public class DOMGpxReader implements IGpxFileReader
 
     }
 
+    public String getFormattedFileCreationTime(File file)
+    {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document document = null;
+        try
+        {
+            builder = factory.newDocumentBuilder();
+            document = builder.parse(file);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        if (document != null)
+        {
+            NodeList trkptList = document.getElementsByTagName("trkpt");
+            if (trkptList.getLength() > 0)
+            {
+                Element trkpt = (Element) trkptList.item(trkptList.getLength() - 1);
+                Date date = parseTime(trkpt.getElementsByTagName("time").item(0).getFirstChild().getNodeValue());
+                SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yy HH:mm:ss", Locale.US);
+                return DATE_FORMAT.format(date);
+            }
+        }
+        return "unknown";
+    }
+
+    Date getCreationDate(File file)
+    {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document document = null;
+        try
+        {
+            builder = factory.newDocumentBuilder();
+            document = builder.parse(file);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        if (document != null)
+        {
+            NodeList trkptList = document.getElementsByTagName("trkpt");
+            if (trkptList.getLength() > 0)
+            {
+                Element trkpt = (Element) trkptList.item(trkptList.getLength() - 1);
+                return parseTime(trkpt.getElementsByTagName("time").item(0).getFirstChild().getNodeValue());
+            }
+        }
+        return new Date();
+    }
+
     private Date parseTime(String timeString)
     {
 
@@ -115,4 +171,6 @@ public class DOMGpxReader implements IGpxFileReader
         }
         return date;
     }
+
+
 }

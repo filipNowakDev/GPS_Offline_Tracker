@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -158,7 +159,10 @@ public class FileWriterGpxFileService implements IGpxFileService
     public List<File> getListOfFiles()
     {
         File folder = new File(context.getExternalFilesDir(null), TRACKS_RECORDINGS_DIR);
-        return Arrays.asList(folder.listFiles());
+        List<File> fileList = Arrays.asList(folder.listFiles());
+        DOMGpxReader reader = new DOMGpxReader();
+        Collections.sort(fileList, (f1, f2)-> reader.getCreationDate(f2).compareTo(reader.getCreationDate(f1)));
+        return fileList;
     }
 
     private static String convertTime(long time)

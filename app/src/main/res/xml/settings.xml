@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        app:key="gps_category"
+        app:title="@string/gps_category">
+        <SeekBarPreference
+            app:key="gps_min_distance"
+            app:title="@string/gps_min_distance"
+            app:defaultValue="10"
+            android:max="100" />
+        <SeekBarPreference
+            app:key="gps_min_interval"
+            app:title="@string/gps_min_interval"
+            app:defaultValue="5"
+            android:max="60"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="units_category"
+        app:title="@string/units_category">
+        <ListPreference
+            app:key="unit_speed"
+            app:title="@string/unit_speed"
+            app:entries="@array/units_speed_entries"
+            app:entryValues="@array/units_speed_entry_values"
+            app:defaultValue="1"
+            app:useSimpleSummaryProvider="true"/>
+
+    </PreferenceCategory>
+
+
+</androidx.preference.PreferenceScreen>

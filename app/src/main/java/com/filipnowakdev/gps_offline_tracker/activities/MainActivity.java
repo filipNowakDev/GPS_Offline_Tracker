@@ -8,24 +8,38 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
+import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper
+public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper, ToolbarTitleUpdater
 {
 
     private LocationService locationService;
@@ -34,6 +48,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     Intent locationServiceIntent;
 
     private NotificationService notificationService;
+    private NavController navController;
+    private AppBarConfiguration appBarConfiguration;
+
+    @Override
+    public boolean onSupportNavigateUp()
+    {
+        System.out.println("[DEBUG] : Navigate_up");
+        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -84,9 +107,39 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private void initNavigation()
     {
-        NavController navController = Navigation.findNavController(this, R.id.navigation_container);
+        navController = Navigation.findNavController(this, R.id.navigation_container);
         BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
+        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigation, navController);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.settings_menu_item:
+            {
+                Navigation.findNavController(this, R.id.navigation_container)
+                        .navigate(R.id.action_settings);
+                break;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
 
@@ -156,8 +209,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Track name: ");
 
+            Date currentTime = Calendar.getInstance().getTime();
+            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyHHmmSS", Locale.US);
+            String date = DATE_FORMAT.format(currentTime);
+
             final EditText input = new EditText(this);
             input.setInputType(InputType.TYPE_CLASS_TEXT);
+            input.setText(date);
             builder.setView(input);
 
             builder.setPositiveButton("OK", (dialog, which) ->
@@ -173,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         return HomeFragment.BUTTON_STATE.NOT_RECORDING;
     }
 
-
     @Override
     public boolean isRecordingActive()
     {
@@ -186,5 +243,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     public boolean isLocationAvailable()
     {
         return locationService != null && locationService.getLocation() != null;
+    }
+
+    @Override
+    public void updateToolbarTitle(String title)
+    {
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }
 }

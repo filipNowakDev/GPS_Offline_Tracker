@@ -7,8 +7,8 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_tracks"
             app:destination="@id/tracksFragment" />
@@ -19,13 +19,13 @@
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.filipnowakdev.gps_offline_tracker.fragments.MapFragment"
-        android:label="fragment_map"
+        android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/tracksFragment"
         android:name="com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment"
-        android:label="fragment_file_list"
-        tools:layout="@layout/fragment_file_list" >
+        android:label="@string/title_tracks"
+        tools:layout="@layout/fragment_file_list">
         <action
             android:id="@+id/action_tracks_to_details"
             app:destination="@id/trackDetailsFragment"
@@ -44,6 +44,17 @@
     <fragment
         android:id="@+id/trackDetailsFragment"
         android:name="com.filipnowakdev.gps_offline_tracker.fragments.TrackDetailsFragment"
-        android:label="fragment_track_details"
+        android:label="@string/track_details"
         tools:layout="@layout/fragment_track_details" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.SettingsFragment"
+        android:label="@string/toolbar_settings" />
+    <action
+        android:id="@+id/action_settings"
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
 </navigation>

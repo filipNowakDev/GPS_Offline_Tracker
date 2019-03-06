@@ -1,19 +1,23 @@
 package com.filipnowakdev.gps_offline_tracker.services;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
+
 import android.widget.Toast;
 
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.FileWriterGpxFileService;
@@ -22,25 +26,39 @@ import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileService;
 public class LocationService extends Service implements LocationListener
 {
 
-    private static final long MIN_DISTANCE_CHANGE = 10;//meters
-    private static final long MIN_UPDATE_INTERVAL = 100; //milliseconds
-
 
     private LocationManager locationManager;
 
     private IGpxFileService gpxFileService;
     private boolean isRecording;
     private IBinder binder = new LocationServiceBinder();
+    private int minDistanceChange;
+    private int minUpdateInterval;
 
     public boolean isRecordingActive()
     {
         return isRecording;
     }
 
+    @SuppressLint("MissingPermission")
     public void startRecording()
     {
         if (gpxFileService != null)
         {
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(this);
+            if (sharedPreferences.getInt("gps_min_distance", 10) != minDistanceChange
+                    || (sharedPreferences.getInt("gps_min_interval", 5) * 1000) != minUpdateInterval)
+            {
+                //meters
+                minDistanceChange = sharedPreferences.getInt("gps_min_distance", 10);
+                //milliseconds
+                minUpdateInterval = sharedPreferences.getInt("gps_min_interval", 5) * 1000;
+                locationManager.removeUpdates(this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateInterval, minDistanceChange, this);
+            }
+
+            System.out.println("[DEBUG] : starting with interval " + minUpdateInterval + " ms");
             gpxFileService.createNewTrack();
             gpxFileService.addNewTrackpoint(getLocation());
             isRecording = true;
@@ -64,11 +82,18 @@ public class LocationService extends Service implements LocationListener
         try
         {
 
+
             this.locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
             if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_UPDATE_INTERVAL, MIN_DISTANCE_CHANGE, this);
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(this);
+                //meters
+                minDistanceChange = sharedPreferences.getInt("gps_min_distance", 10);
+                //milliseconds
+                minUpdateInterval = sharedPreferences.getInt("gps_min_interval", 5) * 1000;
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateInterval, minDistanceChange, this);
             } else
             {
                 displayError();
@@ -120,6 +145,7 @@ public class LocationService extends Service implements LocationListener
     public void onDestroy()
     {
         super.onDestroy();
+        locationManager.removeUpdates(this);
     }
 
     @Override

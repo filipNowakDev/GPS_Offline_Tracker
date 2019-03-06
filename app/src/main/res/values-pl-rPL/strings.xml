@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_home">Dom</string>
+    <string name="title_tracks">Ślady</string>
+    <string name="title_notifications">Powiadomienia</string>
+    <string name="title_map">Mapa</string>
+    <string name="get_coordinates_button_text">Wyświetl współrzędne</string>
+    <string name="latitude_label">Szerokość: %1$.6f</string>
+    <string name="longitude_label">Wysokość: %1$.6f</string>
+    <string name="accuracy_label">Dokładność: %1$.2f m</string>
+    <string name="start_recording_string">Rozpocznij nagrywanie</string>
+    <string name="end_recording">Zakończ nagrywanie</string>
+    <string name="title_activity_tracks">Ślady</string>
+    <string name="speed_label_mps">Prędkość: %1$.2f m/s</string>
+    <string name="track_details">Szczegóły</string>
+    <string name="track_map">Pokaż na mapie</string>
+    <string name="track_delete">Usuń</string>
+    <string name="distance">Odległość</string>
+    <string name="duration">Czas trwania</string>
+    <string name="avg_speed">Śr. prędkość</string>
+    <string name="max_speed">Prędkość maksymalna</string>
+    <string name="avg_move_speed">Śr. prędkość ruchu</string>
+    <string name="title_on_map">%1$s na mapie</string>
+    <string name="title_track_details">%1$s szczegóły</string>
+    <string name="toolbar_settings">Ustawienia</string>
+    <string name="gps_category">Ustawienia GPS</string>
+    <string name="gps_min_distance">Minimalna odległość GPS (metry)</string>
+    <string name="gps_min_interval">Minimalny interwał GPS (sekundy)</string>
+    <string name="units_category">Jednostki</string>
+    <string name="unit_speed">Prędkość</string>
+    <string name="speed_label_kph">Prędkość: %1$.2f km/h</string>
+    <string name="lat_placeholder">Szerokość: ...</string>
+    <string name="lon_placeholder">Wysokość: ...</string>
+    <string name="acc_placeholder">Dokładność: ...</string>
+    <string name="speed_placeholder">Prędkość: ...</string>
+</resources>

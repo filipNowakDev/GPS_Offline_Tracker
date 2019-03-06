@@ -27,4 +27,6 @@
     <string name="meters_per_second">%1$.2f m/s</string>
     <string name="kilometers_per_hour">%1$.2f km/h</string>
     <string name="duration_field">%1$02d:%2$02d:%3$02d</string>
+    <string name="max_speed">Max speed</string>
+    <string name="avg_move_speed">Avg. movement speed</string>
 </resources>

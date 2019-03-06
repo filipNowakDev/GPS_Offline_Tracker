@@ -10,7 +10,7 @@
     <View
         android:id="@+id/horizontal_details_divider_1"
         android:layout_width="395dp"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginTop="16dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toStartOf="@+id/vertical_details_div"
@@ -53,10 +53,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@+id/max_speed_caption"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/avg_speed_field" />
+        app:layout_constraintTop_toBottomOf="@+id/duration_field" />
 
     <TextView
         android:id="@+id/duration_caption"
@@ -87,9 +89,7 @@
         android:id="@+id/avg_speed_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="67dp"
         android:text="@string/avg_speed"
         app:layout_constraintBottom_toTopOf="@+id/avg_speed_field"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,9 +100,7 @@
         android:id="@+id/avg_speed_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="79dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="68dp"
         android:layout_marginBottom="8dp"
         android:text="0 km/h"
         app:layout_constraintBottom_toTopOf="@+id/horizontal_details_divider_2"
@@ -120,4 +118,58 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horizontal_details_divider_1" />
+
+    <View
+        android:id="@+id/horizontal_details_divider_3"
+        android:layout_width="395dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avg_mov_speed_field" />
+
+    <TextView
+        android:id="@+id/max_speed_caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/max_speed"
+        app:layout_constraintBaseline_toBaselineOf="@+id/avg_mov_speed_caption"
+        app:layout_constraintEnd_toStartOf="@+id/vertical_details_div"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/max_speed_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 km/h"
+        app:layout_constraintBaseline_toBaselineOf="@+id/avg_mov_speed_field"
+        app:layout_constraintEnd_toStartOf="@+id/vertical_details_div"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/avg_mov_speed_caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/avg_move_speed"
+        app:layout_constraintBottom_toTopOf="@+id/avg_mov_speed_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vertical_details_div"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_details_divider_2" />
+
+    <TextView
+        android:id="@+id/avg_mov_speed_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="8dp"
+        android:text="0 km/h"
+        app:layout_constraintBottom_toTopOf="@+id/horizontal_details_divider_3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vertical_details_div"
+        app:layout_constraintTop_toBottomOf="@+id/avg_mov_speed_caption" />
 </android.support.constraint.ConstraintLayout>

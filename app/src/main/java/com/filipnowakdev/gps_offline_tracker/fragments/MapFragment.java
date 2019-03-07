@@ -7,11 +7,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.filipnowakdev.gps_offline_tracker.BuildConfig;
 import com.filipnowakdev.gps_offline_tracker.R;
@@ -32,13 +36,16 @@ import java.util.List;
 
 public class MapFragment extends Fragment implements LocationListener
 {
-    public static final String TRACK_NAME = "TRACK_NAME";
+    static final String TRACK_NAME = "TRACK_NAME";
     private boolean trackOverlayMode;
+    private boolean followMode;
+    private boolean positionInitialised = false;
     private String trackOverlaid;
 
     private MapView map;
     private IMapController mapController;
     private IGpxFileReader gpxFileReader;
+    private ImageButton followModeButton;
 
     private Marker currentPositionMarker;
     private LocationManager locationManager;
@@ -52,7 +59,7 @@ public class MapFragment extends Fragment implements LocationListener
 
 
     @Override
-    public void onAttach(Context context)
+    public void onAttach(@NonNull Context context)
     {
         super.onAttach(context);
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -77,15 +84,39 @@ public class MapFragment extends Fragment implements LocationListener
         if (getArguments() != null)
         {
             trackOverlayMode = true;
+            followMode = false;
+            positionInitialised = true;
             trackOverlaid = getArguments().getString(TRACK_NAME);
             toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_on_map, trackOverlaid));
+        } else
+        {
+            trackOverlayMode = false;
+            followMode = true;
         }
+        initFollowButton(v);
         initMap(v);
         initTrackOverlay();
         initLocationMarker();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         return v;
+    }
+
+    private void initFollowButton(View v)
+    {
+        followModeButton = v.findViewById(R.id.follow_mode_button);
+        followModeButton.setOnClickListener(view ->
+        {
+            followMode = !followMode;
+            if (followMode)
+            {
+                mapController.animateTo(currentPositionMarker.getPosition());
+                followModeButton.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp);
+            } else
+                followModeButton.setImageResource(R.drawable.ic_gps_fixed_black_24dp);
+
+        });
+        if (followMode)
+            followModeButton.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp);
     }
 
     @Override
@@ -113,7 +144,7 @@ public class MapFragment extends Fragment implements LocationListener
             trackLine.setTitle(trackOverlaid);
             trackLine.setPoints(track);
             map.getOverlays().add(trackLine);
-            mapController.setCenter(track.get(track.size()/2));
+            mapController.setCenter(track.get(track.size() / 2));
         }
     }
 
@@ -121,7 +152,8 @@ public class MapFragment extends Fragment implements LocationListener
     {
         currentPositionMarker = new Marker(map);
         currentPositionMarker.setTitle("You are here.");
-        currentPositionMarker.setPosition(new GeoPoint(0.0, 0.0));
+        GeoPoint startPoint = new GeoPoint(0.0, 0.0);
+        currentPositionMarker.setPosition(startPoint);
         currentPositionMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         map.getOverlays().add(currentPositionMarker);
         map.invalidate();
@@ -144,13 +176,21 @@ public class MapFragment extends Fragment implements LocationListener
     }
 
 
-    public void updateLocation(Location location)
+    private void updateLocation(Location location)
     {
-        if(location != null)
+        if (location != null)
         {
             GeoPoint curPos = new GeoPoint(location.getLatitude(), location.getLongitude());
-            if (!trackOverlayMode)
-                mapController.setCenter(curPos);
+            if (followMode)
+            {
+                if (positionInitialised)
+                    mapController.animateTo(curPos);
+                else
+                {
+                    positionInitialised = true;
+                    mapController.setCenter(curPos);
+                }
+            }
             currentPositionMarker.setPosition(curPos);
             map.invalidate();
         }

@@ -29,8 +29,9 @@
     <string name="units_category">Jednostki</string>
     <string name="unit_speed">Prędkość</string>
     <string name="speed_label_kph">Prędkość: %1$.2f km/h</string>
-    <string name="lat_placeholder">Szerokość: ...</string>
-    <string name="lon_placeholder">Wysokość: ...</string>
-    <string name="acc_placeholder">Dokładność: ...</string>
-    <string name="speed_placeholder">Prędkość: ...</string>
+    <string name="lat_placeholder">Szerokość: …</string>
+    <string name="lon_placeholder">Wysokość: …</string>
+    <string name="acc_placeholder">Dokładność: …</string>
+    <string name="speed_placeholder">Prędkość: …</string>
+    <string name="toggle_location_following">Przełącz tryb śledzenia</string>
 </resources>

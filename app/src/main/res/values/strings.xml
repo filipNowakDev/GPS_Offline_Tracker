@@ -42,8 +42,10 @@
     <string name="units_category">Units</string>
     <string name="unit_speed">Speed</string>
     <string name="speed_label_kph" >Speed: %1$.2f km/h</string>
-    <string name="lat_placeholder">Lat: ...</string>
-    <string name="lon_placeholder">Lon: ...</string>
-    <string name="acc_placeholder">Acc: ...</string>
-    <string name="speed_placeholder">Speed: ...</string>
+    <string name="lat_placeholder">Lat: …</string>
+    <string name="lon_placeholder">Lon: …</string>
+    <string name="acc_placeholder">Acc: …</string>
+    <string name="speed_placeholder">Speed: …</string>
+    <string name="openstreetmap_contributors" translatable="false">© OpenStreetMap contributors</string>
+    <string name="toggle_location_following">Toggle location following</string>
 </resources>

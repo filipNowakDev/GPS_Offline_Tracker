@@ -4,15 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
@@ -138,8 +137,7 @@ public class TrackDetailsFragment extends Fragment
             avgSpeedView.setText(getString(R.string.kilometers_per_hour, avgMetersPerSecond));
             maxSpeedView.setText(getString(R.string.kilometers_per_hour, maxSpeed));
             avgMovSpeedView.setText(getString(R.string.kilometers_per_hour, avgMoveSpeed));
-        }
-        else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
+        } else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
         {
             avgSpeedView.setText(getString(R.string.meters_per_second, avgMetersPerSecond));
             maxSpeedView.setText(getString(R.string.meters_per_second, maxSpeed));

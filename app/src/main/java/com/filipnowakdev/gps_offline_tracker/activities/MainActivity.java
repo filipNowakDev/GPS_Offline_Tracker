@@ -8,25 +8,27 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,18 +36,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper, ToolbarTitleUpdater
 {
 
     private LocationService locationService;
     private boolean isLocationServiceBound;
     private ServiceConnection serviceConnection;
-    Intent locationServiceIntent;
+    private Intent locationServiceIntent;
 
     private NotificationService notificationService;
     private NavController navController;
@@ -128,17 +125,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
-        {
-            case R.id.settings_menu_item:
-            {
-                Navigation.findNavController(this, R.id.navigation_container)
-                        .navigate(R.id.action_settings);
-                break;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        if (item.getItemId() == R.id.settings_menu_item)
+            Navigation.findNavController(this, R.id.navigation_container)
+                    .navigate(R.id.action_settings);
+        else
+
+            return super.onOptionsItemSelected(item);
+
         return true;
     }
 
@@ -210,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             builder.setTitle("Track name: ");
 
             Date currentTime = Calendar.getInstance().getTime();
-            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyHHmmSS", Locale.US);
+            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMddHHmmSS", Locale.US);
             String date = DATE_FORMAT.format(currentTime);
 
             final EditText input = new EditText(this);

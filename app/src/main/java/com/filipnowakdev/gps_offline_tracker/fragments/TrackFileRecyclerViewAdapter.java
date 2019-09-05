@@ -1,6 +1,8 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,24 +10,40 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
 import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment.OnListFragmentInteractionListener;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
+import com.filipnowakdev.gps_offline_tracker.utils.DateUtils;
 
 import java.io.File;
 import java.util.List;
 
 
-public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFileRecyclerViewAdapter.ViewHolder>
+public class TrackFileRecyclerViewAdapter extends ListAdapter<Track, TrackFileRecyclerViewAdapter.ViewHolder>
 {
 
-    private final List<File> fileList;
     private final OnListFragmentInteractionListener mListener;
 
-    TrackFileRecyclerViewAdapter(List<File> items, OnListFragmentInteractionListener listener)
+    TrackFileRecyclerViewAdapter(OnListFragmentInteractionListener listener)
     {
-        fileList = items;
+        super(DIFF_CALLBACK);
         mListener = listener;
     }
+
+    private static DiffUtil.ItemCallback<Track> DIFF_CALLBACK = new DiffUtil.ItemCallback<Track>()
+    {
+        @Override
+        public boolean areItemsTheSame(@NonNull Track oldItem, @NonNull Track newItem)
+        {
+            return oldItem.id == newItem.id;
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Track oldItem, @NonNull Track newItem)
+        {
+            return oldItem.equals(newItem);
+        }
+    };
 
     @NonNull
     @Override
@@ -39,35 +57,26 @@ public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFile
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
     {
-        holder.file = fileList.get(position);
-        holder.filenameView.setText(fileList.get(position).getName().replaceFirst("[.][^.]+$", ""));
+        Track track = getItem(position);
+        holder.filenameView.setText(track.name);
 
-        DOMGpxReader reader = new DOMGpxReader();
-        holder.creationDateView.setText(reader.getFormattedFileCreationTime(fileList.get(position)));
+        holder.creationDateView.setText(DateUtils.getFormattedDateString(track.creationDate));
 
         holder.view.setOnClickListener(v ->
         {
             if (null != mListener)
             {
-                // Notify the active callbacks interface (the activity, if the
-                // fragment is attached to one) that an item has been selected.
-                mListener.onListFragmentInteraction(holder.file, v);
+                mListener.onListFragmentInteraction(track, v);
             }
         });
     }
 
-    @Override
-    public int getItemCount()
-    {
-        return fileList.size();
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         final View view;
         final TextView filenameView;
         final TextView creationDateView;
-        File file;
 
         ViewHolder(View view)
         {
@@ -77,6 +86,7 @@ public class TrackFileRecyclerViewAdapter extends RecyclerView.Adapter<TrackFile
             creationDateView = view.findViewById(R.id.creation_date);
         }
 
+        @NonNull
         @Override
         public String toString()
         {

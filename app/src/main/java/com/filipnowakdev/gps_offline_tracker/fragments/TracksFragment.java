@@ -3,7 +3,9 @@ package com.filipnowakdev.gps_offline_tracker.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,10 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.FileWriterGpxFileService;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
+import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackListViewModel;
 
-import java.io.File;
 import java.util.Objects;
 
 import androidx.navigation.Navigation;
@@ -23,7 +24,8 @@ import androidx.navigation.Navigation;
 public class TracksFragment extends Fragment
 {
     private OnListFragmentInteractionListener mListener;
-    private IGpxFileService gpxFileService;
+    private TrackListViewModel tracksViewModel;
+    private TrackFileRecyclerViewAdapter trackAdapter;
 
     public TracksFragment()
     {
@@ -47,7 +49,7 @@ public class TracksFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_file_list, container, false);
-
+        trackAdapter = new TrackFileRecyclerViewAdapter(mListener);
         // Set the adapter
         if (view instanceof RecyclerView)
         {
@@ -55,17 +57,16 @@ public class TracksFragment extends Fragment
             RecyclerView recyclerView = (RecyclerView) view;
 
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new TrackFileRecyclerViewAdapter(gpxFileService.getListOfFiles(), mListener));
+            recyclerView.setAdapter(trackAdapter);
         }
         return view;
     }
 
 
     @Override
-    public void onAttach(final Context context)
+    public void onAttach(@NonNull final Context context)
     {
         super.onAttach(context);
-        gpxFileService = new FileWriterGpxFileService(context);
 
         if (context instanceof OnListFragmentInteractionListener)
         {
@@ -81,13 +82,13 @@ public class TracksFragment extends Fragment
                     if (item.getItemId() == R.id.track_map)
                     {
                         Bundle args = new Bundle();
-                        args.putString(MapFragment.TRACK_NAME, track.getName());
+                        args.putLong(MapFragment.TRACK_ID, track.getId());
                         Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
                                 .navigate(R.id.action_tracks_to_map, args);
                     } else if (item.getItemId() == R.id.track_details)
                     {
                         Bundle args = new Bundle();
-                        args.putString(TrackDetailsFragment.TRACK_NAME, track.getName());
+                        args.putLong(TrackDetailsFragment.TRACK_ID, track.getId());
                         Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
                                 .navigate(R.id.action_tracks_to_details, args);
 
@@ -109,6 +110,16 @@ public class TracksFragment extends Fragment
 
     public interface OnListFragmentInteractionListener
     {
-        void onListFragmentInteraction(File track, View v);
+        void onListFragmentInteraction(Track track, View v);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+
+        tracksViewModel = ViewModelProviders.of(this).get(TrackListViewModel.class);
+        tracksViewModel.getTracks().observe(this, tracks ->
+                trackAdapter.submitList(tracks));
     }
 }

@@ -9,8 +9,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
+import com.filipnowakdev.gps_offline_tracker.viewmodels.MapViewModel;
+import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackListViewModel;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -36,11 +39,11 @@ import java.util.List;
 
 public class MapFragment extends Fragment implements LocationListener
 {
-    static final String TRACK_NAME = "TRACK_NAME";
+    static final String TRACK_ID = "TRACK_ID";
     private boolean trackOverlayMode;
     private boolean followMode;
     private boolean positionInitialised = false;
-    private String trackOverlaid;
+    private long trackId;
 
     private MapView map;
     private IMapController mapController;
@@ -51,6 +54,7 @@ public class MapFragment extends Fragment implements LocationListener
     private LocationManager locationManager;
 
     private ToolbarTitleUpdater toolbarTitleUpdater;
+    private MapViewModel viewModel;
 
     public MapFragment()
     {
@@ -86,8 +90,7 @@ public class MapFragment extends Fragment implements LocationListener
             trackOverlayMode = true;
             followMode = false;
             positionInitialised = true;
-            trackOverlaid = getArguments().getString(TRACK_NAME);
-            toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_on_map, trackOverlaid));
+            trackId = getArguments().getLong(TRACK_ID);
         } else
         {
             trackOverlayMode = false;
@@ -95,11 +98,21 @@ public class MapFragment extends Fragment implements LocationListener
         }
         initFollowButton(v);
         initMap(v);
-        initTrackOverlay();
-        initLocationMarker();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         return v;
     }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        viewModel = ViewModelProviders.of(this).get(MapViewModel.class);
+        viewModel.setTrackById(trackId);
+        initTrackOverlay();
+        initLocationMarker();
+
+    }
+
 
     private void initFollowButton(View v)
     {
@@ -139,12 +152,13 @@ public class MapFragment extends Fragment implements LocationListener
     {
         if (trackOverlayMode)
         {
-            List<GeoPoint> track = gpxFileReader.getGeoPointsList(trackOverlaid);
+            List<GeoPoint> track = viewModel.getGeoPoints();
             Polyline trackLine = new Polyline(map);
-            trackLine.setTitle(trackOverlaid);
+            trackLine.setTitle(viewModel.getTrackName());
             trackLine.setPoints(track);
             map.getOverlays().add(trackLine);
             mapController.setCenter(track.get(track.size() / 2));
+            toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, viewModel.getTrackName()));
         }
     }
 

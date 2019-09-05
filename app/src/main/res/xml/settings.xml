@@ -9,12 +9,14 @@
             app:key="gps_min_distance"
             app:title="@string/gps_min_distance"
             app:defaultValue="10"
-            android:max="100" />
+            android:max="100"
+            app:showSeekBarValue="true"/>
         <SeekBarPreference
             app:key="gps_min_interval"
             app:title="@string/gps_min_interval"
             app:defaultValue="5"
-            android:max="60"/>
+            android:max="60"
+            app:showSeekBarValue="true"/>
 
     </PreferenceCategory>
 
@@ -26,8 +28,8 @@
             app:title="@string/unit_speed"
             app:entries="@array/units_speed_entries"
             app:entryValues="@array/units_speed_entry_values"
-            app:defaultValue="1"
-            app:useSimpleSummaryProvider="true"/>
+            android:defaultValue="@string/kilometers_per_hour"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

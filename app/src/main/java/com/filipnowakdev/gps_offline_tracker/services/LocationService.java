@@ -20,8 +20,12 @@ import androidx.preference.PreferenceManager;
 
 import android.widget.Toast;
 
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.FileWriterGpxFileService;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileService;
+import com.filipnowakdev.gps_offline_tracker.database.db.TrackDatabase;
+import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
+import com.filipnowakdev.gps_offline_tracker.database.entities.Trackpoint;
+import com.filipnowakdev.gps_offline_tracker.track_utils.TrackRecordingService;
+
+import java.util.Calendar;
 
 public class LocationService extends Service implements LocationListener
 {
@@ -29,11 +33,13 @@ public class LocationService extends Service implements LocationListener
 
     private LocationManager locationManager;
 
-    private IGpxFileService gpxFileService;
+    //private IGpxFileService gpxFileService;
     private boolean isRecording;
     private IBinder binder = new LocationServiceBinder();
     private int minDistanceChange;
     private int minUpdateInterval;
+    private TrackDatabase db;
+    private TrackRecordingService trackRecordingService;
 
     public boolean isRecordingActive()
     {
@@ -43,7 +49,7 @@ public class LocationService extends Service implements LocationListener
     @SuppressLint("MissingPermission")
     public void startRecording()
     {
-        if (gpxFileService != null)
+        if (db != null)
         {
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(this);
@@ -59,21 +65,22 @@ public class LocationService extends Service implements LocationListener
             }
 
             System.out.println("[DEBUG] : starting with interval " + minUpdateInterval + " ms");
-            gpxFileService.createNewTrack();
-            gpxFileService.addNewTrackpoint(getLocation());
+//            gpxFileService.createNewTrack();
+//            gpxFileService.addNewTrackpoint(getLocation());
+            trackRecordingService.createNewTrack();
             isRecording = true;
             Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void saveRecording(String filename)
+    public void saveRecording(String name)
     {
         if (isRecording)
         {
             isRecording = false;
-            gpxFileService.saveTrackAsFile(filename);
-            Toast.makeText(this, "Recording saved as " + filename + ".gpx", Toast.LENGTH_SHORT).show();
-
+            //gpxFileService.saveTrackAsFile(filename);
+            trackRecordingService.stopRecording(name);
+            Toast.makeText(this, "Recording saved as " + name + ".gpx", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -81,8 +88,6 @@ public class LocationService extends Service implements LocationListener
     {
         try
         {
-
-
             this.locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
             if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
@@ -104,9 +109,10 @@ public class LocationService extends Service implements LocationListener
         }
     }
 
-    private void initGpxManager()
+    private void initTrackRecordingService()
     {
-        gpxFileService = new FileWriterGpxFileService(this);
+        db = TrackDatabase.getLocationServiceInstance(getApplicationContext());
+        trackRecordingService = new TrackRecordingService(db);
     }
 
     private void displayError()
@@ -137,7 +143,7 @@ public class LocationService extends Service implements LocationListener
     {
         super.onStartCommand(intent, flags, startId);
         initLocationManager();
-        initGpxManager();
+        initTrackRecordingService();
         return START_REDELIVER_INTENT;
     }
 
@@ -158,7 +164,10 @@ public class LocationService extends Service implements LocationListener
     public void onLocationChanged(Location location)
     {
         if (isRecording)
-            gpxFileService.addNewTrackpoint(location);
+        {
+            //gpxFileService.addNewTrackpoint(location);
+            trackRecordingService.addTrackpoint(location, 0);
+        }
     }
 
     @Override

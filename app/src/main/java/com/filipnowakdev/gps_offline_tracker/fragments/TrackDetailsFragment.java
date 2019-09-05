@@ -2,7 +2,6 @@ package com.filipnowakdev.gps_offline_tracker.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,26 +9,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
+import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackDetailsViewModel;
 
-import java.util.List;
 import java.util.Objects;
 
 
 public class TrackDetailsFragment extends Fragment
 {
-    static final String TRACK_NAME = "track_name";
-    private static final double MIN_MOVEMENT_SPEED = 3.0;
+    static final String TRACK_ID = "track_id";
     private static final double MPS_TO_KPH = 3.6;
 
-    private String track;
-    private IGpxFileReader gpxFileReader;
     private ToolbarTitleUpdater toolbarTitleUpdater;
     private TextView distanceView;
     private TextView durationView;
@@ -37,6 +33,8 @@ public class TrackDetailsFragment extends Fragment
     private TextView maxSpeedView;
     private TextView avgMovSpeedView;
     private SharedPreferences sharedPreferences;
+    private TrackDetailsViewModel viewModel;
+    private long trackId;
 
     public TrackDetailsFragment()
     {
@@ -57,10 +55,8 @@ public class TrackDetailsFragment extends Fragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            track = getArguments().getString(TRACK_NAME);
-            toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, track));
+            trackId = getArguments().getLong(TRACK_ID);
         }
-        gpxFileReader = new DOMGpxReader(getContext());
     }
 
     @Override
@@ -69,59 +65,19 @@ public class TrackDetailsFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_track_details, container, false);
         initFields(v);
-        calculateData();
         return v;
     }
 
-    private void calculateData()
+    private void setFieldsValues()
     {
 
-        double distance = 0;
-        long duration;
-        double avgMoveSpeed;
-
-        double moveDistance = 0;
-        double moveDuration = 0;
-        double maxSpeed = 0;
-
-        List<Location> trackpoints = gpxFileReader.getLocationList(track);
-
-        for (int i = 0; i < trackpoints.size() - 1; i++)
-        {
-            double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
-            double timeDiff = (trackpoints.get(i + 1).getTime() - trackpoints.get(i).getTime()) / 1000.0;
-
-            double momentSpeed = distanceDiff / timeDiff;
-
-            if (momentSpeed > maxSpeed && momentSpeed != Double.POSITIVE_INFINITY)
-                maxSpeed = momentSpeed;
-
-            if (momentSpeed > MIN_MOVEMENT_SPEED && momentSpeed != Double.POSITIVE_INFINITY)
-            {
-                moveDuration += timeDiff;
-                moveDistance += distanceDiff;
-            }
-            distance += distanceDiff;
-        }
-
-        duration = trackpoints.get(trackpoints.size() - 1).getTime() - trackpoints.get(0).getTime();
-        long allSecondsDuration = duration / 1000;
-        long hours = (duration / 3600000);
-        duration -= hours * 3600000;
-        long minutes = duration / 60000;
-        duration -= minutes * 60000;
-        long seconds = duration / 1000;
-
-        double avgMetersPerSecond = distance / allSecondsDuration;
-        avgMoveSpeed = moveDistance / moveDuration;
-
-
-        setFieldsValues(distance, avgMoveSpeed, maxSpeed, hours, minutes, seconds, avgMetersPerSecond);
-    }
-
-    private void setFieldsValues(double distance, double avgMoveSpeed, double maxSpeed, long hours, long minutes, long seconds, double avgMetersPerSecond)
-    {
-
+        double distance = viewModel.getDistance();
+        double avgMetersPerSecond = viewModel.getAvgMetersPerSecond();
+        double maxSpeed = viewModel.getMaxSpeed();
+        double avgMoveSpeed = viewModel.getAvgMoveSpeed();
+        long hours = viewModel.getHours();
+        long minutes = viewModel.getMinutes();
+        long seconds = viewModel.getSeconds();
 
         if (distance >= 1000.0)
             distanceView.setText(getString(R.string.kilometers, distance / 1000));
@@ -155,6 +111,17 @@ public class TrackDetailsFragment extends Fragment
         avgSpeedView = v.findViewById(R.id.avg_speed_field);
         maxSpeedView = v.findViewById(R.id.max_speed_field);
         avgMovSpeedView = v.findViewById(R.id.avg_mov_speed_field);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+
+        viewModel = ViewModelProviders.of(this).get(TrackDetailsViewModel.class);
+        viewModel.setTrackById(trackId);
+        toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, viewModel.getTrackName()));
+        setFieldsValues();
     }
 
 }

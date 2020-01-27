@@ -86,33 +86,38 @@ public class LocationService extends Service implements LocationListener
 
     private void initLocationManager()
     {
-        try
+        if (locationManager == null)
         {
-            this.locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-            if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            try
             {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(this);
-                //meters
-                minDistanceChange = sharedPreferences.getInt("gps_min_distance", 10);
-                //milliseconds
-                minUpdateInterval = sharedPreferences.getInt("gps_min_interval", 5) * 1000;
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateInterval, minDistanceChange, this);
-            } else
+                this.locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+                if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                {
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(this);
+                    //meters
+                    minDistanceChange = sharedPreferences.getInt("gps_min_distance", 10);
+                    //milliseconds
+                    minUpdateInterval = sharedPreferences.getInt("gps_min_interval", 5) * 1000;
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateInterval, minDistanceChange, this);
+                } else
+                {
+                    displayError();
+                }
+            } catch (SecurityException e)
             {
                 displayError();
             }
-        } catch (SecurityException e)
-        {
-            displayError();
         }
     }
 
     private void initTrackRecordingService()
     {
-        db = TrackDatabase.getLocationServiceInstance(getApplicationContext());
-        trackRecordingService = new TrackRecordingService(db);
+        if (db == null)
+            db = TrackDatabase.getLocationServiceInstance(getApplicationContext());
+        if (trackRecordingService == null)
+            trackRecordingService = new TrackRecordingService(db);
     }
 
     private void displayError()

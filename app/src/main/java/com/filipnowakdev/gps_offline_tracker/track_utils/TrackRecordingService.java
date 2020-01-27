@@ -43,7 +43,7 @@ public class TrackRecordingService
         }
         if (id != null)
             recordedTrack.id = id;
-        System.out.println("NEW TRACK: " + recordedTrack.id);
+        System.out.println("[DEBUG] NEW TRACK: " + recordedTrack.id);
     }
 
     public void stopRecording(String name)
@@ -59,10 +59,8 @@ public class TrackRecordingService
 
     public void addTrackpoint(Location location, int bpm)
     {
-        System.out.println("TERAZ BEDZIE KURUA TRACK ID: " + recordedTrack.id);
         if (recordedTrack != null && recordedTrack.id != 0)
         {
-            System.out.println("TERAZ BEDZIE WSTAWIONE W TRACK ID: " + recordedTrack.id);
             Trackpoint trackpoint = new Trackpoint();
             trackpoint.trackId = recordedTrack.id;
             trackpoint.latitude = location.getLatitude();
@@ -74,5 +72,7 @@ public class TrackRecordingService
             trackpoint.time = location.getTime();
             Executors.newSingleThreadExecutor().execute(() -> db.trackpointDao().insert(trackpoint));
         }
+        else
+            System.out.println("[DEBUG] We lost the track reference somehow");
     }
 }

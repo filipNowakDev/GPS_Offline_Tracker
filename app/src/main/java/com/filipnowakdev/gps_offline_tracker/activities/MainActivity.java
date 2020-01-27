@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
                     LocationService.LocationServiceBinder locationServiceBinder = (LocationService.LocationServiceBinder) iBinder;
                     locationService = locationServiceBinder.getService();
                     isLocationServiceBound = true;
+
                 }
 
                 @Override

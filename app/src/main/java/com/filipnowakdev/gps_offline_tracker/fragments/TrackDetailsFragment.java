@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
@@ -118,7 +119,7 @@ public class TrackDetailsFragment extends Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(this).get(TrackDetailsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(TrackDetailsViewModel.class);
         viewModel.setTrackById(trackId);
         toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, viewModel.getTrackName()));
         setFieldsValues();

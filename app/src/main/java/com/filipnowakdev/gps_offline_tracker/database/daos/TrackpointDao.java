@@ -21,14 +21,17 @@ public interface TrackpointDao
     @Query("SELECT * FROM trackpoint WHERE id IN (:trackpointIds)")
     LiveData<List<Trackpoint>> loadAllByIds(int[] trackpointIds);
 
-    @Query("SELECT trackpoint.* FROM trackpoint JOIN track ON trackId == track.id WHERE trackId == :id ORDER BY sequenceNumber ASC")
+    @Query("SELECT * FROM trackpoint WHERE trackId == :id ORDER BY sequenceNumber ASC")
     LiveData<List<Trackpoint>> getByTrackId(long id);
 
-    @Query("SELECT trackpoint.* FROM trackpoint JOIN track ON trackId == track.id WHERE trackId == :id ORDER BY sequenceNumber ASC")
+    @Query("SELECT * FROM trackpoint WHERE trackId == :id ORDER BY sequenceNumber ASC")
     List<Trackpoint> getByTrackIdPOJO(long id);
 
     @Query("SELECT * FROM trackpoint WHERE id = :id")
     LiveData<Trackpoint> findById(int id);
+
+    @Query("DELETE FROM trackpoint WHERE trackId == :id")
+    void deleteByTrackId(long id);
 
     @Insert
     void insertAll(Trackpoint... trackpoints);

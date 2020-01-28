@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.filipnowakdev.gps_offline_tracker.database.daos.TrackDao;
+import com.filipnowakdev.gps_offline_tracker.database.daos.TrackpointDao;
 import com.filipnowakdev.gps_offline_tracker.database.db.TrackDatabase;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
 
@@ -17,12 +18,14 @@ import java.util.concurrent.Future;
 public class TrackRepository
 {
     private final TrackDao trackDao;
+    private final TrackpointDao trackpointDao;
     private final LiveData<List<Track>> allTracks;
 
 
     public TrackRepository(Application app)
     {
         this.trackDao = TrackDatabase.getInstance(app).trackDao();
+        this.trackpointDao = TrackDatabase.getInstance(app).trackpointDao();
         allTracks = trackDao.getAll();
     }
 
@@ -59,7 +62,10 @@ public class TrackRepository
 
     public void delete(Track track)
     {
-        Executors.newSingleThreadExecutor().execute(() -> trackDao.delete(track));
+        Executors.newSingleThreadExecutor().execute(() -> {
+            trackDao.delete(track);
+            trackpointDao.deleteByTrackId(track.id);
+        });
     }
 
     public void update(Track track)

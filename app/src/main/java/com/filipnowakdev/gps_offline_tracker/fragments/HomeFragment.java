@@ -7,18 +7,20 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
+
 import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.viewmodels.LocationServiceBoundViewModel;
 
 import java.util.Objects;
 
@@ -42,6 +44,21 @@ public class HomeFragment extends Fragment implements LocationListener
     private RecordingStateHelper recordingStateHelper;
     private LocationManager locationManager;
     private SharedPreferences sharedPreferences;
+
+    private LocationServiceBoundViewModel locationViewModel;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        locationViewModel = new ViewModelProvider(Objects.requireNonNull(getActivity())).get(LocationServiceBoundViewModel.class);
+        System.out.println("[DEBUG] ODPALAMY Obserwowanko");
+        locationViewModel.getIsBound().observe(this, serviceBound -> {
+            if (serviceBound)
+                HomeFragment.this.restoreUI();
+            System.out.println("[DEBUG] ZMIANA JU AJA POWINNA NA " + serviceBound.toString());
+        });
+    }
 
     @Override
     public void onAttach(@NonNull Context context)
@@ -77,7 +94,6 @@ public class HomeFragment extends Fragment implements LocationListener
     public void onResume()
     {
         super.onResume();
-        restoreUI();
     }
 
     private void restoreUI()
@@ -90,6 +106,8 @@ public class HomeFragment extends Fragment implements LocationListener
 
         else
             setRecordingButtonsActivated(BUTTON_STATE.NOT_RECORDING);
+        System.out.println("[DEBUG] NO I NAGRYWANKO JEST TERA " + recordingStateHelper.isRecordingActive());
+
     }
 
 
@@ -191,8 +209,6 @@ public class HomeFragment extends Fragment implements LocationListener
     public interface RecordingStateHelper
     {
         boolean isRecordingActive();
-
         boolean isLocationAvailable();
     }
-
 }

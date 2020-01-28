@@ -28,4 +28,9 @@ public class TrackListViewModel extends AndroidViewModel
     {
         return tracks;
     }
+
+    public void deleteTrack(Track track)
+    {
+        trackRepository.delete(track);
+    }
 }

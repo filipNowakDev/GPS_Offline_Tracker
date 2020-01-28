@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -28,6 +29,7 @@ import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
 import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
+import com.filipnowakdev.gps_offline_tracker.viewmodels.LocationServiceBoundViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     private NotificationService notificationService;
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
+    private LocationServiceBoundViewModel locationViewModel;
 
     @Override
     public boolean onSupportNavigateUp()
@@ -62,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         setContentView(R.layout.activity_main);
         getPermissions();
         initNavigation();
+        locationViewModel = new ViewModelProvider(this).get(LocationServiceBoundViewModel.class);
+        locationViewModel.setIsBound(false);
     }
 
     @Override
@@ -70,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         super.onPause();
         this.unbindService(serviceConnection);
         isLocationServiceBound = false;
+        locationViewModel.setIsBound(false);
         if (!locationService.isRecordingActive())
         {
             this.stopService(locationServiceIntent);
@@ -152,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
                     LocationService.LocationServiceBinder locationServiceBinder = (LocationService.LocationServiceBinder) iBinder;
                     locationService = locationServiceBinder.getService();
                     isLocationServiceBound = true;
+                    locationViewModel.setIsBound(true);
 
                 }
 
@@ -159,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
                 public void onServiceDisconnected(ComponentName componentName)
                 {
                     isLocationServiceBound = false;
+                    locationViewModel.setIsBound(false);
                 }
             };
         }
@@ -183,8 +191,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         {
             if (locationService.getLocation() != null)
             {
+                locationService.startForeground(NotificationService.getRecordingNotificationId(), notificationService.getRecordingNotification());
                 locationService.startRecording();
-                notificationService.displayRecordingNotification();
                 return HomeFragment.BUTTON_STATE.RECORDING;
             } else
             {
@@ -217,8 +225,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
                 String fileName = input.getText().toString();
                 locationService.saveRecording(fileName);
-                notificationService.hideRecordingNotification();
-
+                locationService.stopForeground(true);
             });
             builder.show();
         }
@@ -229,7 +236,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     public boolean isRecordingActive()
     {
         if (locationService != null)
+        {
+            System.out.println("[DEBUG] NO KURDE W serwisie jest na " + locationService.isRecordingActive());
             return locationService.isRecordingActive();
+
+        }
+        System.out.println("[DEBUG] XD SERWIS NADAL JEST NULLEM");
         return false;
     }
 

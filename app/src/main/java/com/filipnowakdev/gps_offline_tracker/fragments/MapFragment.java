@@ -7,16 +7,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.filipnowakdev.gps_offline_tracker.BuildConfig;
 import com.filipnowakdev.gps_offline_tracker.R;
@@ -24,7 +24,6 @@ import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.MapViewModel;
-import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackListViewModel;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -106,7 +105,7 @@ public class MapFragment extends Fragment implements LocationListener
     public void onActivityCreated(@Nullable Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        viewModel = ViewModelProviders.of(this).get(MapViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MapViewModel.class);
         viewModel.setTrackById(trackId);
         initTrackOverlay();
         initLocationMarker();

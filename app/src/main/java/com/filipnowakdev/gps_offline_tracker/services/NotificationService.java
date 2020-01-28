@@ -1,5 +1,6 @@
 package com.filipnowakdev.gps_offline_tracker.services;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,7 +15,7 @@ import com.filipnowakdev.gps_offline_tracker.activities.MainActivity;
 
 public class NotificationService
 {
-    private static final int RECORDING_NOTIFICATION_ID = 0;
+    private static final int RECORDING_NOTIFICATION_ID = 2137;
 
     private final static String NOTIFICATION_CHANNEL_ID = "com.filipnowakdev.gps_offline_tracker.notifications";
     private NotificationCompat.Builder recordingNotificationBuilder;
@@ -76,5 +77,13 @@ public class NotificationService
         notificationManager.cancel(RECORDING_NOTIFICATION_ID);
     }
 
+    public Notification getRecordingNotification()
+    {
+        return recordingNotificationBuilder.build();
+    }
 
+    public static int getRecordingNotificationId()
+    {
+        return RECORDING_NOTIFICATION_ID;
+    }
 }

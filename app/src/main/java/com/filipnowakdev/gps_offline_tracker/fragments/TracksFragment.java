@@ -2,24 +2,24 @@ package com.filipnowakdev.gps_offline_tracker.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackListViewModel;
 
 import java.util.Objects;
-
-import androidx.navigation.Navigation;
 
 public class TracksFragment extends Fragment
 {
@@ -93,6 +93,10 @@ public class TracksFragment extends Fragment
                                 .navigate(R.id.action_tracks_to_details, args);
 
                     }
+                    else if (item.getItemId() == R.id.track_delete)
+                    {
+                        tracksViewModel.deleteTrack(track);
+                    }
                     return true;
                 });
                 popup.show();
@@ -118,7 +122,7 @@ public class TracksFragment extends Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        tracksViewModel = ViewModelProviders.of(this).get(TrackListViewModel.class);
+        tracksViewModel = new ViewModelProvider(this).get(TrackListViewModel.class);
         tracksViewModel.getTracks().observe(this, tracks ->
                 trackAdapter.submitList(tracks));
     }

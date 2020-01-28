@@ -8,8 +8,8 @@
     <item
         android:id="@+id/track_map"
         android:title="@string/track_map" />
-    <!--<item
+    <item
         android:id="@+id/track_delete"
-        android:title="@string/track_delete" />-->
+        android:title="@string/track_delete" />
 
 </menu>

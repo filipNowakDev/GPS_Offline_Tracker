@@ -13,19 +13,14 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
-import android.widget.Toast;
-
 import com.filipnowakdev.gps_offline_tracker.database.db.TrackDatabase;
-import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
-import com.filipnowakdev.gps_offline_tracker.database.entities.Trackpoint;
 import com.filipnowakdev.gps_offline_tracker.track_utils.TrackRecordingService;
-
-import java.util.Calendar;
 
 public class LocationService extends Service implements LocationListener
 {
@@ -33,7 +28,6 @@ public class LocationService extends Service implements LocationListener
 
     private LocationManager locationManager;
 
-    //private IGpxFileService gpxFileService;
     private boolean isRecording;
     private IBinder binder = new LocationServiceBinder();
     private int minDistanceChange;
@@ -65,8 +59,6 @@ public class LocationService extends Service implements LocationListener
             }
 
             System.out.println("[DEBUG] : starting with interval " + minUpdateInterval + " ms");
-//            gpxFileService.createNewTrack();
-//            gpxFileService.addNewTrackpoint(getLocation());
             trackRecordingService.createNewTrack();
             isRecording = true;
             Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
@@ -81,6 +73,7 @@ public class LocationService extends Service implements LocationListener
             //gpxFileService.saveTrackAsFile(filename);
             trackRecordingService.stopRecording(name);
             Toast.makeText(this, "Recording saved as " + name + ".gpx", Toast.LENGTH_SHORT).show();
+            System.out.println("[DEBUG] : inside SERWIs dzialaj plis bo zakonczylo nagrywaccc");
         }
     }
 
@@ -146,6 +139,8 @@ public class LocationService extends Service implements LocationListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        System.out.println("[DEBUG] : sTaaRt SERWisu xdxdxdx");
+
         super.onStartCommand(intent, flags, startId);
         initLocationManager();
         initTrackRecordingService();
@@ -156,6 +151,8 @@ public class LocationService extends Service implements LocationListener
     public void onDestroy()
     {
         super.onDestroy();
+        System.out.println("[DEBUG] : Wywalenie serwisu na smietnik");
+
         locationManager.removeUpdates(this);
     }
 
@@ -170,7 +167,7 @@ public class LocationService extends Service implements LocationListener
     {
         if (isRecording)
         {
-            //gpxFileService.addNewTrackpoint(location);
+            System.out.println("[DEBUG] NEW LOCATION");
             trackRecordingService.addTrackpoint(location, 0);
         }
     }

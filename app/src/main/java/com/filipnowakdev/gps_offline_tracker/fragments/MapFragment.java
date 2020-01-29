@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -156,7 +157,10 @@ public class MapFragment extends Fragment implements LocationListener
             trackLine.setTitle(viewModel.getTrackName());
             trackLine.setPoints(track);
             map.getOverlays().add(trackLine);
-            mapController.setCenter(track.get(track.size() / 2));
+            if (!track.isEmpty())
+                mapController.setCenter(track.get(track.size() / 2));
+            else
+                Toast.makeText(this.getContext(), getString(R.string.no_trackpoints_string), Toast.LENGTH_LONG).show();
             toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, viewModel.getTrackName()));
         }
     }
@@ -164,7 +168,7 @@ public class MapFragment extends Fragment implements LocationListener
     private void initLocationMarker()
     {
         currentPositionMarker = new Marker(map);
-        currentPositionMarker.setTitle("You are here.");
+        currentPositionMarker.setTitle(getString(R.string.marker_title_string));
         GeoPoint startPoint = new GeoPoint(0.0, 0.0);
         currentPositionMarker.setPosition(startPoint);
         currentPositionMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);

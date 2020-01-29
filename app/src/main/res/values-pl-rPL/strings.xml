@@ -34,4 +34,10 @@
     <string name="acc_placeholder">Dokładność: …</string>
     <string name="speed_placeholder">Prędkość: …</string>
     <string name="toggle_location_following">Przełącz tryb śledzenia</string>
+    <string name="no_trackpoints_string">Trasa nie zawiera punktów trasy.</string>
+    <string name="ok_string">OK</string>
+    <string name="track_name_string">Nazwa trasy:</string>
+    <string name="cancel_string">Anuluj</string>
+    <string name="delete_confirm_header_string">Czy na pewno chcesz usunąć tę trasę?</string>
+    <string name="marker_title_string">Jesteś tutaj.</string>
 </resources>

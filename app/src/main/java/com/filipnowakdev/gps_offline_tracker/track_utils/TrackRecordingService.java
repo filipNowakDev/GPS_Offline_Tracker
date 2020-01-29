@@ -17,6 +17,7 @@ public class TrackRecordingService
     private TrackDatabase db;
     private Track recordedTrack;
     private long currentSequenceNumber;
+    public static final String TEMP_TRACK_NAME = "com.filipnowakdev.__temp";
 
 
     public TrackRecordingService(TrackDatabase db)
@@ -29,7 +30,7 @@ public class TrackRecordingService
         recordedTrack = new Track();
         recordedTrack.creationDate = Calendar.getInstance().getTimeInMillis();
         recordedTrack.creator = "anonymous";
-        recordedTrack.name = "temp";
+        recordedTrack.name = TEMP_TRACK_NAME;
         currentSequenceNumber = 0;
         Callable<Long> getCallable = () -> db.trackDao().insert(recordedTrack);
         Long id = null;

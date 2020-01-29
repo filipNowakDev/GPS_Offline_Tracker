@@ -55,39 +55,48 @@ public class TrackDetailsViewModel extends AndroidViewModel
         double moveDuration = 0;
         maxSpeed = 0;
 
-
-        for (int i = 0; i < trackpoints.size() - 1; i++)
+        if (trackpoints.size() >= 2)
         {
-
-
-            double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
-            double timeDiff = (trackpoints.get(i + 1).time - trackpoints.get(i).time) / 1000.0;
-            System.out.println("distdiff: " + distanceDiff + " timediff: " + timeDiff + " time: " + trackpoints.get(i).time);
-            double momentSpeed = distanceDiff / timeDiff;
-
-            if (momentSpeed > maxSpeed && momentSpeed != Double.POSITIVE_INFINITY)
-                maxSpeed = momentSpeed;
-
-            if (momentSpeed > MIN_MOVEMENT_SPEED && momentSpeed != Double.POSITIVE_INFINITY)
+            for (int i = 0; i < trackpoints.size() - 1; i++)
             {
-                moveDuration += timeDiff;
-                moveDistance += distanceDiff;
+
+
+                double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
+                double timeDiff = (trackpoints.get(i + 1).time - trackpoints.get(i).time) / 1000.0;
+                System.out.println("distdiff: " + distanceDiff + " timediff: " + timeDiff + " time: " + trackpoints.get(i).time);
+                double momentSpeed = distanceDiff / timeDiff;
+
+                if (momentSpeed > maxSpeed && momentSpeed != Double.POSITIVE_INFINITY)
+                    maxSpeed = momentSpeed;
+
+                if (momentSpeed > MIN_MOVEMENT_SPEED && momentSpeed != Double.POSITIVE_INFINITY)
+                {
+                    moveDuration += timeDiff;
+                    moveDistance += distanceDiff;
+                }
+                distance += distanceDiff;
             }
-            distance += distanceDiff;
+            long duration = trackpoints.get(trackpoints.size() - 1).time - trackpoints.get(0).time;
+            long allSecondsDuration = duration / 1000;
+            hours = (duration / 3600000);
+            duration -= hours * 3600000;
+            minutes = duration / 60000;
+            duration -= minutes * 60000;
+            seconds = duration / 1000;
+
+            avgMetersPerSecond = distance / allSecondsDuration;
+            avgMoveSpeed = Double.valueOf(moveDistance / moveDuration).isNaN() ? 0 : moveDistance / moveDuration;
+
+            System.out.println("duration: "+ duration + " maxspeed: " + maxSpeed);
         }
-
-        long duration = trackpoints.get(trackpoints.size() - 1).time - trackpoints.get(0).time;
-        long allSecondsDuration = duration / 1000;
-        hours = (duration / 3600000);
-        duration -= hours * 3600000;
-        minutes = duration / 60000;
-        duration -= minutes * 60000;
-        seconds = duration / 1000;
-
-        avgMetersPerSecond = distance / allSecondsDuration;
-        avgMoveSpeed = moveDistance / moveDuration;
-
-        System.out.println("duration: "+ duration + " maxspeed: " + maxSpeed);
+        else
+        {
+            hours = minutes = seconds = 0;
+            maxSpeed = 0;
+            distance = 0;
+            avgMetersPerSecond = 0;
+            avgMoveSpeed = 0;
+        }
     }
 
     public double getDistance()

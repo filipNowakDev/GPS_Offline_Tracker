@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,7 +24,7 @@ import java.util.Objects;
 
 public class TracksFragment extends Fragment
 {
-    private OnListFragmentInteractionListener mListener;
+    private OnListFragmentInteractionListener listInteractionListener;
     private TrackListViewModel tracksViewModel;
     private TrackFileRecyclerViewAdapter trackAdapter;
 
@@ -49,8 +50,7 @@ public class TracksFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_file_list, container, false);
-        trackAdapter = new TrackFileRecyclerViewAdapter(mListener);
-        // Set the adapter
+        trackAdapter = new TrackFileRecyclerViewAdapter(listInteractionListener);
         if (view instanceof RecyclerView)
         {
             Context context = view.getContext();
@@ -70,10 +70,10 @@ public class TracksFragment extends Fragment
 
         if (context instanceof OnListFragmentInteractionListener)
         {
-            mListener = (OnListFragmentInteractionListener) context;
+            listInteractionListener = (OnListFragmentInteractionListener) context;
         } else
         {
-            mListener = (track, v) ->
+            listInteractionListener = (track, v) ->
             {
                 PopupMenu popup = new PopupMenu(v.getContext(), v);
                 popup.getMenuInflater().inflate(R.menu.track_menu, popup.getMenu());
@@ -92,10 +92,17 @@ public class TracksFragment extends Fragment
                         Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
                                 .navigate(R.id.action_tracks_to_details, args);
 
-                    }
-                    else if (item.getItemId() == R.id.track_delete)
+                    } else if (item.getItemId() == R.id.track_delete)
                     {
-                        tracksViewModel.deleteTrack(track);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(this.getContext()));
+                        builder.setTitle(track.getName());
+                        builder.setMessage(getString(R.string.delete_confirm_header_string));
+                        builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
+                                tracksViewModel.deleteTrack(track));
+                        builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) ->
+                        {
+                        });
+                        builder.show();
                     }
                     return true;
                 });
@@ -108,7 +115,7 @@ public class TracksFragment extends Fragment
     public void onDetach()
     {
         super.onDetach();
-        mListener = null;
+        listInteractionListener = null;
     }
 
 

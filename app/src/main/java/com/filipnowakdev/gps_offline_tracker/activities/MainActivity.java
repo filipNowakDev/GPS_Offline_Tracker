@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         if (isLocationServiceBound)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Track name: ");
+            builder.setTitle(getString(R.string.track_name_string));
 
             Date currentTime = Calendar.getInstance().getTime();
             SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMddHHmmSS", Locale.US);
@@ -220,13 +220,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             input.setText(date);
             builder.setView(input);
 
-            builder.setPositiveButton("OK", (dialog, which) ->
+            builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
             {
-
                 String fileName = input.getText().toString();
                 locationService.saveRecording(fileName);
                 locationService.stopForeground(true);
             });
+            builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> {});
             builder.show();
         }
         return HomeFragment.BUTTON_STATE.NOT_RECORDING;

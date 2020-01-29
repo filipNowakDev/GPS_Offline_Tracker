@@ -15,7 +15,7 @@ import java.util.List;
 @Dao
 public interface TrackDao
 {
-    @Query("SELECT * FROM track")
+    @Query("SELECT * FROM track WHERE name <> \"com.filipnowakdev.__temp\"")
     LiveData<List<Track>> getAll();
 
     @Query("SELECT * FROM track WHERE id IN (:trackIds)")

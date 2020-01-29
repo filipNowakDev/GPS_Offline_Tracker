@@ -149,7 +149,7 @@ public class HomeFragment extends Fragment implements LocationListener
             accView.setText(getString(R.string.accuracy_label, location.getAccuracy()));
             String speedFormat = sharedPreferences.getString("unit_speed", getString(R.string.kilometers_per_hour));
             if (Objects.equals(speedFormat, getString(R.string.kilometers_per_hour)))
-                speedView.setText(getString(R.string.speed_label_kph, location.getSpeed()));
+                speedView.setText(getString(R.string.speed_label_kph, location.getSpeed() * 3.6));
 
             else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
                       speedView.setText(getString(R.string.speed_label_mps, location.getSpeed()));

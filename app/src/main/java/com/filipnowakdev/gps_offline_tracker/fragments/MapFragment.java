@@ -47,7 +47,6 @@ public class MapFragment extends Fragment implements LocationListener
 
     private MapView map;
     private IMapController mapController;
-    private IGpxFileReader gpxFileReader;
     private ImageButton followModeButton;
 
     private Marker currentPositionMarker;
@@ -74,7 +73,6 @@ public class MapFragment extends Fragment implements LocationListener
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        gpxFileReader = new DOMGpxReader(getContext());
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
     }
 

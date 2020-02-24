@@ -4,11 +4,13 @@
     android:id="@+id/track_card_view"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:elevation="2dp"
+    android:layout_gravity="center"
+    android:layout_marginLeft="8dp"
     android:layout_marginTop="5dp"
+    android:layout_marginRight="8dp"
     android:background="@color/colorListItem"
     android:divider="@color/colorPrimary"
-    android:layout_gravity="center">
+    android:elevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"

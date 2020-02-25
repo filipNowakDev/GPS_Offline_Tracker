@@ -49,17 +49,21 @@ public class TracksFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_file_list, container, false);
         trackAdapter = new TrackFileRecyclerViewAdapter(listInteractionListener);
+        View view = inflater.inflate(R.layout.fragment_file_list, container, false);
+        initRecyclerView(view);
+        return view;
+    }
+
+    private void initRecyclerView(View view)
+    {
         if (view instanceof RecyclerView)
         {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(trackAdapter);
         }
-        return view;
     }
 
 
@@ -67,48 +71,65 @@ public class TracksFragment extends Fragment
     public void onAttach(@NonNull final Context context)
     {
         super.onAttach(context);
+        assignItemActionListener(context);
+    }
 
+    private void assignItemActionListener(@NonNull Context context)
+    {
         if (context instanceof OnListFragmentInteractionListener)
-        {
             listInteractionListener = (OnListFragmentInteractionListener) context;
-        } else
-        {
-            listInteractionListener = (track, v) ->
-            {
-                PopupMenu popup = new PopupMenu(v.getContext(), v);
-                popup.getMenuInflater().inflate(R.menu.track_menu, popup.getMenu());
-                popup.setOnMenuItemClickListener(item ->
-                {
-                    if (item.getItemId() == R.id.track_map)
-                    {
-                        Bundle args = new Bundle();
-                        args.putLong(MapFragment.TRACK_ID, track.getId());
-                        Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
-                                .navigate(R.id.action_tracks_to_map, args);
-                    } else if (item.getItemId() == R.id.track_details)
-                    {
-                        Bundle args = new Bundle();
-                        args.putLong(TrackDetailsFragment.TRACK_ID, track.getId());
-                        Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
-                                .navigate(R.id.action_tracks_to_details, args);
+        else
+            listInteractionListener = this::showActionsMenu;
+    }
 
-                    } else if (item.getItemId() == R.id.track_delete)
-                    {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(this.getContext()));
-                        builder.setTitle(track.getName());
-                        builder.setMessage(getString(R.string.delete_confirm_header_string));
-                        builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
-                                tracksViewModel.deleteTrack(track));
-                        builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) ->
-                        {
-                        });
-                        builder.show();
-                    }
-                    return true;
-                });
-                popup.show();
-            };
-        }
+    private void showActionsMenu(Track track, View v)
+    {
+        PopupMenu popup = new PopupMenu(v.getContext(), v);
+        popup.getMenuInflater().inflate(R.menu.track_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(item ->
+        {
+            switch (item.getItemId())
+            {
+                case R.id.track_map:
+                {
+                    navigateToFragment(track, MapFragment.TRACK_ID, R.id.action_tracks_to_map);
+                    break;
+                }
+                case R.id.track_details:
+                {
+                    navigateToFragment(track, TrackPagerFragment.TRACK_ID, R.id.action_tracks_to_pager);
+                    break;
+                }
+                case R.id.track_delete:
+                {
+                    showDeleteDialog(track);
+                    break;
+                }
+            }
+            return true;
+        });
+        popup.show();
+    }
+
+    private void navigateToFragment(Track track, String argKey, int fragmentId)
+    {
+        Bundle args = new Bundle();
+        args.putLong(argKey, track.getId());
+        Navigation.findNavController(Objects.requireNonNull(getActivity()), R.id.navigation_container)
+                .navigate(fragmentId, args);
+    }
+
+    private void showDeleteDialog(Track track)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(this.getContext()));
+        builder.setTitle(track.getName());
+        builder.setMessage(getString(R.string.delete_confirm_header_string));
+        builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
+                tracksViewModel.deleteTrack(track));
+        builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) ->
+        {
+        });
+        builder.show();
     }
 
     @Override

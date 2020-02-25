@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.filipnowakdev.gps_offline_tracker.R;
@@ -48,6 +47,13 @@ public class TrackDetailsFragment extends Fragment
         toolbarTitleUpdater = (ToolbarTitleUpdater) context;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
+    }
+
+    public static Fragment newInstance(long trackId)
+    {
+        TrackDetailsFragment f = new TrackDetailsFragment();
+        f.trackId = trackId;
+        return f;
     }
 
     @Override

@@ -17,11 +17,8 @@ public class LocationServiceBoundViewModel extends AndroidViewModel
 
     public void setIsBound(Boolean isBound)
     {
-        System.out.println("[DEBUG] ZMIANA LIVEDATY NA " + isBound.toString());
         this.isBound.postValue(isBound);
     }
-
-
 
     public LocationServiceBoundViewModel(@NonNull Application application)
     {

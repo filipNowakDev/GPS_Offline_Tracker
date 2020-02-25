@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnButtonClickListener, HomeFragment.RecordingStateHelper, ToolbarTitleUpdater
 {
@@ -73,6 +74,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     protected void onPause()
     {
         super.onPause();
+        unbindLocationService();
+    }
+
+    private void unbindLocationService()
+    {
         this.unbindService(serviceConnection);
         isLocationServiceBound = false;
         locationViewModel.setIsBound(false);
@@ -135,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             Navigation.findNavController(this, R.id.navigation_container)
                     .navigate(R.id.action_settings);
         else
-
             return super.onOptionsItemSelected(item);
 
         return true;
@@ -144,10 +149,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private void initLocationService()
     {
+        startLocationService();
+        bindToLocationService();
+    }
+
+    private void startLocationService()
+    {
         locationServiceIntent = new Intent(this.getApplicationContext(), LocationService.class);
         this.startService(locationServiceIntent);
+    }
 
-
+    private void bindToLocationService()
+    {
         if (serviceConnection == null)
         {
             serviceConnection = new ServiceConnection()
@@ -159,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
                     locationService = locationServiceBinder.getService();
                     isLocationServiceBound = true;
                     locationViewModel.setIsBound(true);
-
                 }
 
                 @Override
@@ -208,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     {
         if (isLocationServiceBound)
         {
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.track_name_string));
 
@@ -220,14 +233,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
             input.setText(date);
             builder.setView(input);
 
+            AtomicBoolean cancelledSaving = new AtomicBoolean(false);
+
             builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
             {
                 String fileName = input.getText().toString();
                 locationService.saveRecording(fileName);
                 locationService.stopForeground(true);
             });
-            builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> {});
+            builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> {
+                cancelledSaving.set(true);});
             builder.show();
+            if (cancelledSaving.get())
+                return HomeFragment.BUTTON_STATE.RECORDING;
         }
         return HomeFragment.BUTTON_STATE.NOT_RECORDING;
     }
@@ -236,12 +254,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     public boolean isRecordingActive()
     {
         if (locationService != null)
-        {
-            System.out.println("[DEBUG] NO KURDE W serwisie jest na " + locationService.isRecordingActive());
             return locationService.isRecordingActive();
-
-        }
-        System.out.println("[DEBUG] XD SERWIS NADAL JEST NULLEM");
         return false;
     }
 

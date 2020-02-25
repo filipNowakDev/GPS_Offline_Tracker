@@ -63,7 +63,6 @@ public class TrackDetailsViewModel extends AndroidViewModel
 
                 double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
                 double timeDiff = (trackpoints.get(i + 1).time - trackpoints.get(i).time) / 1000.0;
-                System.out.println("distdiff: " + distanceDiff + " timediff: " + timeDiff + " time: " + trackpoints.get(i).time);
                 double momentSpeed = distanceDiff / timeDiff;
 
                 if (momentSpeed > maxSpeed && momentSpeed != Double.POSITIVE_INFINITY)
@@ -86,8 +85,6 @@ public class TrackDetailsViewModel extends AndroidViewModel
 
             avgMetersPerSecond = distance / allSecondsDuration;
             avgMoveSpeed = Double.valueOf(moveDistance / moveDuration).isNaN() ? 0 : moveDistance / moveDuration;
-
-            System.out.println("duration: "+ duration + " maxspeed: " + maxSpeed);
         }
         else
         {

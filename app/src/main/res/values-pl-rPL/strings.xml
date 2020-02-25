@@ -40,4 +40,5 @@
     <string name="cancel_string">Anuluj</string>
     <string name="delete_confirm_header_string">Czy na pewno chcesz usunąć tę trasę?</string>
     <string name="marker_title_string">Jesteś tutaj.</string>
+    <string name="track_plot">Wykres</string>
 </resources>

@@ -44,8 +44,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="683" />
-                            <option name="y" value="265" />
+                            <option name="x" value="760" />
+                            <option name="y" value="327" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -68,8 +68,20 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="684" />
-                            <option name="y" value="-46" />
+                            <option name="x" value="761" />
+                            <option name="y" value="14" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="trackPagerFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="752" />
+                            <option name="y" value="-300" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -92,6 +104,11 @@
                               </value>
                             </entry>
                             <entry key="action_tracks_to_map">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_tracks_to_pager">
                               <value>
                                 <LayoutPositions />
                               </value>

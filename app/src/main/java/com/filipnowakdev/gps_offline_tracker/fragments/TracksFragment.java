@@ -55,6 +55,20 @@ public class TracksFragment extends Fragment
         return view;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        assignViewModel();
+    }
+
+    private void assignViewModel()
+    {
+        tracksViewModel = new ViewModelProvider(this).get(TrackListViewModel.class);
+        tracksViewModel.getTracks().observe(this, tracks ->
+                trackAdapter.submitList(tracks));
+    }
+
     private void initRecyclerView(View view)
     {
         if (view instanceof RecyclerView)
@@ -65,7 +79,6 @@ public class TracksFragment extends Fragment
             recyclerView.setAdapter(trackAdapter);
         }
     }
-
 
     @Override
     public void onAttach(@NonNull final Context context)
@@ -84,6 +97,13 @@ public class TracksFragment extends Fragment
 
     private void showActionsMenu(Track track, View v)
     {
+        PopupMenu popup = prepareActionsMenu(track, v);
+        popup.show();
+    }
+
+    @NonNull
+    private PopupMenu prepareActionsMenu(Track track, View v)
+    {
         PopupMenu popup = new PopupMenu(v.getContext(), v);
         popup.getMenuInflater().inflate(R.menu.track_menu, popup.getMenu());
         popup.setOnMenuItemClickListener(item ->
@@ -91,24 +111,18 @@ public class TracksFragment extends Fragment
             switch (item.getItemId())
             {
                 case R.id.track_map:
-                {
                     navigateToFragment(track, MapFragment.TRACK_ID, R.id.action_tracks_to_map);
                     break;
-                }
                 case R.id.track_details:
-                {
                     navigateToFragment(track, TrackPagerFragment.TRACK_ID, R.id.action_tracks_to_pager);
                     break;
-                }
                 case R.id.track_delete:
-                {
                     showDeleteDialog(track);
                     break;
-                }
             }
             return true;
         });
-        popup.show();
+        return popup;
     }
 
     private void navigateToFragment(Track track, String argKey, int fragmentId)
@@ -145,13 +159,5 @@ public class TracksFragment extends Fragment
         void onListFragmentInteraction(Track track, View v);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
 
-        tracksViewModel = new ViewModelProvider(this).get(TrackListViewModel.class);
-        tracksViewModel.getTracks().observe(this, tracks ->
-                trackAdapter.submitList(tracks));
-    }
 }

@@ -17,12 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.filipnowakdev.gps_offline_tracker.BuildConfig;
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.IGpxFileReader;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.MapViewModel;
 
@@ -77,74 +74,62 @@ public class MapFragment extends Fragment implements LocationListener
     }
 
 
-    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
-        if (getArguments() != null)
-        {
-            trackOverlayMode = true;
-            followMode = false;
-            positionInitialised = true;
-            trackId = getArguments().getLong(TRACK_ID);
-        } else
-        {
-            trackOverlayMode = false;
-            followMode = true;
-        }
+        setOverlayMode();
         initFollowButton(v);
         initMap(v);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        initLocationManager();
         return v;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void initLocationManager()
+    {
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+    }
+
+    private void setOverlayMode()
+    {
+        if (getArguments() != null)
+            turnOnOverlayMode();
+        else
+            turnOffOverlayMode();
+    }
+
+    private void turnOffOverlayMode()
+    {
+        trackOverlayMode = false;
+        followMode = true;
+    }
+
+    private void turnOnOverlayMode()
+    {
+        trackOverlayMode = true;
+        followMode = false;
+        positionInitialised = true;
+        assert getArguments() != null;
+        trackId = getArguments().getLong(TRACK_ID);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(MapViewModel.class);
-        viewModel.setTrackById(trackId);
+        initViewModel();
         initTrackOverlay();
         initLocationMarker();
 
     }
 
-
-    private void initFollowButton(View v)
+    private void initViewModel()
     {
-        followModeButton = v.findViewById(R.id.follow_mode_button);
-        followModeButton.setOnClickListener(view ->
-        {
-            followMode = !followMode;
-            if (followMode)
-            {
-                mapController.animateTo(currentPositionMarker.getPosition());
-                followModeButton.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp);
-            } else
-                followModeButton.setImageResource(R.drawable.ic_gps_fixed_black_24dp);
-
-        });
-        if (followMode)
-            followModeButton.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp);
+        viewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        viewModel.setTrackById(trackId);
     }
-
-    @Override
-    public void onDestroyView()
-    {
-        super.onDestroyView();
-        locationManager.removeUpdates(this);
-
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        map.onPause();
-    }
-
 
     private void initTrackOverlay()
     {
@@ -163,6 +148,7 @@ public class MapFragment extends Fragment implements LocationListener
         }
     }
 
+
     private void initLocationMarker()
     {
         currentPositionMarker = new Marker(map);
@@ -173,6 +159,66 @@ public class MapFragment extends Fragment implements LocationListener
         map.getOverlays().add(currentPositionMarker);
         map.invalidate();
     }
+
+    private void initFollowButton(View v)
+    {
+        followModeButton = v.findViewById(R.id.follow_mode_button);
+        setButtonListener();
+        setButtonIcon();
+    }
+
+    private void setButtonIcon()
+    {
+        if (followMode)
+            setButtonNoFollowIcon();
+        else
+            setButtonFollowIcon();
+    }
+
+    private void setButtonListener()
+    {
+        followModeButton.setOnClickListener(view ->
+        {
+            toggleFollowMode();
+            setButtonIcon();
+            if (followMode)
+                animateMapToCurrentLocation();
+        });
+    }
+
+
+
+    private void setButtonFollowIcon()
+    {
+        followModeButton.setImageResource(R.drawable.ic_gps_fixed_black_24dp);
+    }
+
+    private void setButtonNoFollowIcon()
+    {
+        followModeButton.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp);
+    }
+
+    private void toggleFollowMode()
+    {
+        followMode = !followMode;
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        locationManager.removeUpdates(this);
+
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        map.onPause();
+    }
+
+
 
     private void initMap(View v)
     {
@@ -195,20 +241,40 @@ public class MapFragment extends Fragment implements LocationListener
     {
         if (location != null)
         {
-            GeoPoint curPos = new GeoPoint(location.getLatitude(), location.getLongitude());
-            if (followMode)
-            {
-                if (positionInitialised)
-                    mapController.animateTo(curPos);
-                else
-                {
-                    positionInitialised = true;
-                    mapController.setCenter(curPos);
-                }
-            }
-            currentPositionMarker.setPosition(curPos);
-            map.invalidate();
+            setCurrentPosition(location);
+            setMapPosition();
         }
+    }
+
+    private void setMapPosition()
+    {
+        if (followMode)
+        {
+            if (positionInitialised)
+                animateMapToCurrentLocation();
+            else
+            {
+                positionInitialised = true;
+                setMapToCurrentPosition();
+            }
+        }
+        map.invalidate();
+    }
+
+    private void setCurrentPosition(Location location)
+    {
+        GeoPoint curPos = new GeoPoint(location.getLatitude(), location.getLongitude());
+        currentPositionMarker.setPosition(curPos);
+    }
+
+    private void animateMapToCurrentLocation()
+    {
+        mapController.animateTo(currentPositionMarker.getPosition());
+    }
+
+    private void setMapToCurrentPosition()
+    {
+        mapController.setCenter(currentPositionMarker.getPosition());
     }
 
 

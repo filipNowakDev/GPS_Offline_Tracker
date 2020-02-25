@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -218,36 +219,72 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     @Override
     public HomeFragment.BUTTON_STATE onEndClick()
     {
+        boolean cancelledSaving = false;
         if (isLocationServiceBound)
         {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.track_name_string));
-
-            Date currentTime = Calendar.getInstance().getTime();
-            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMddHHmmSS", Locale.US);
-            String date = DATE_FORMAT.format(currentTime);
-
-            final EditText input = new EditText(this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
-            input.setText(date);
-            builder.setView(input);
-
-            AtomicBoolean cancelledSaving = new AtomicBoolean(false);
-
-            builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
-            {
-                String fileName = input.getText().toString();
-                locationService.saveRecording(fileName);
-                locationService.stopForeground(true);
-            });
-            builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> {
-                cancelledSaving.set(true);});
-            builder.show();
-            if (cancelledSaving.get())
-                return HomeFragment.BUTTON_STATE.RECORDING;
+            cancelledSaving = showSaveDialog();
         }
+        if (cancelledSaving)
+            return HomeFragment.BUTTON_STATE.RECORDING;
         return HomeFragment.BUTTON_STATE.NOT_RECORDING;
+    }
+
+    private boolean showSaveDialog()
+    {
+        AtomicBoolean cancelledSaving = new AtomicBoolean(false);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.track_name_string));
+
+        final EditText input = addEditTextToDialog(builder);
+        setDialogButtonListeners(cancelledSaving, builder, input);
+
+        builder.show();
+
+        return cancelledSaving.get();
+    }
+
+    private void setDialogButtonListeners(AtomicBoolean cancelledSaving, AlertDialog.Builder builder, EditText input)
+    {
+        builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) -> endRecording(input));
+        builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> cancelSaving(cancelledSaving));
+    }
+
+    private void cancelSaving(AtomicBoolean cancelledSaving)
+    {
+        cancelledSaving.set(true);
+    }
+
+    private void endRecording(EditText input)
+    {
+        String fileName = input.getText().toString();
+        locationService.saveRecording(fileName);
+        locationService.stopForeground(true);
+    }
+
+    @NonNull
+    private EditText addEditTextToDialog(AlertDialog.Builder builder)
+    {
+        final EditText input = getDialogTextBox();
+        setInitialFilename(input);
+        builder.setView(input);
+        return input;
+    }
+
+    @NonNull
+    private EditText getDialogTextBox()
+    {
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        return input;
+    }
+
+    private void setInitialFilename(EditText input)
+    {
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMddHHmmSS", Locale.US);
+        String date = DATE_FORMAT.format(currentTime);
+        input.setText(date);
     }
 
     @Override

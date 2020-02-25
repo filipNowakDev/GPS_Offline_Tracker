@@ -12,11 +12,7 @@ import android.widget.TextView;
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
 import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment.OnListFragmentInteractionListener;
-import com.filipnowakdev.gps_offline_tracker.gpx_utils.DOMGpxReader;
 import com.filipnowakdev.gps_offline_tracker.utils.DateUtils;
-
-import java.io.File;
-import java.util.List;
 
 
 public class TrackFileRecyclerViewAdapter extends ListAdapter<Track, TrackFileRecyclerViewAdapter.ViewHolder>
@@ -58,30 +54,41 @@ public class TrackFileRecyclerViewAdapter extends ListAdapter<Track, TrackFileRe
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
     {
         Track track = getItem(position);
-        holder.filenameView.setText(track.name);
+        initViewHolderData(holder, track);
+        initViewHolderClickListener(holder, track);
+    }
 
-        holder.creationDateView.setText(DateUtils.getFormattedDateString(track.creationDate));
-
+    private void initViewHolderClickListener(@NonNull ViewHolder holder, Track track)
+    {
         holder.view.setOnClickListener(v ->
         {
             if (null != mListener)
-            {
                 mListener.onListFragmentInteraction(track, v);
-            }
         });
+    }
+
+    private void initViewHolderData(@NonNull ViewHolder holder, Track track)
+    {
+        holder.filenameView.setText(track.name);
+        holder.creationDateView.setText(DateUtils.getFormattedDateString(track.creationDate));
     }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         final View view;
-        final TextView filenameView;
-        final TextView creationDateView;
+        TextView filenameView;
+        TextView creationDateView;
 
         ViewHolder(View view)
         {
             super(view);
             this.view = view;
+            initFields(view);
+        }
+
+        private void initFields(View view)
+        {
             filenameView = view.findViewById(R.id.file_name);
             creationDateView = view.findViewById(R.id.creation_date);
         }

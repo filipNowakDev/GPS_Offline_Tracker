@@ -77,38 +77,58 @@ public class TrackDetailsFragment extends Fragment
 
     private void setFieldsValues()
     {
+        setSpeedData();
+        setDistanceData();
+        setDurationData();
+    }
 
-        double distance = viewModel.getDistance();
+    private void setSpeedData()
+    {
         double avgMetersPerSecond = viewModel.getAvgMetersPerSecond();
         double maxSpeed = viewModel.getMaxSpeed();
         double avgMoveSpeed = viewModel.getAvgMoveSpeed();
-        long hours = viewModel.getHours();
-        long minutes = viewModel.getMinutes();
-        long seconds = viewModel.getSeconds();
+        String speedFormat = getSpeedFormat();
+        if (Objects.equals(speedFormat, getString(R.string.kilometers_per_hour)))
+            setSpeedDataKph(avgMetersPerSecond, maxSpeed, avgMoveSpeed);
+        else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
+            setSpeedData(avgMetersPerSecond, maxSpeed, avgMoveSpeed, R.string.meters_per_second);
+    }
 
+    private String getSpeedFormat()
+    {
+        return sharedPreferences.getString("unit_speed", getString(R.string.kilometers_per_hour));
+    }
+
+    private void setSpeedData(double avgMetersPerSecond, double maxSpeed, double avgMoveSpeed, int formatId)
+    {
+        avgSpeedView.setText(getString(formatId, avgMetersPerSecond));
+        maxSpeedView.setText(getString(formatId, maxSpeed));
+        avgMovSpeedView.setText(getString(formatId, avgMoveSpeed));
+    }
+
+    private void setSpeedDataKph(double avgMetersPerSecond, double maxSpeed, double avgMoveSpeed)
+    {
+        avgMetersPerSecond *= MPS_TO_KPH;
+        maxSpeed *= MPS_TO_KPH;
+        avgMoveSpeed *= MPS_TO_KPH;
+        setSpeedData(avgMetersPerSecond, maxSpeed, avgMoveSpeed, R.string.kilometers_per_hour);
+    }
+
+    private void setDistanceData()
+    {
+        double distance = viewModel.getDistance();
         if (distance >= 1000.0)
             distanceView.setText(getString(R.string.kilometers, distance / 1000));
         else
             distanceView.setText(getString(R.string.meters, distance));
+    }
 
-        String speedFormat = sharedPreferences.getString("unit_speed", getString(R.string.kilometers_per_hour));
-        if (Objects.equals(speedFormat, getString(R.string.kilometers_per_hour)))
-        {
-            avgMetersPerSecond *= MPS_TO_KPH;
-            maxSpeed *= MPS_TO_KPH;
-            avgMoveSpeed *= MPS_TO_KPH;
-            avgSpeedView.setText(getString(R.string.kilometers_per_hour, avgMetersPerSecond));
-            maxSpeedView.setText(getString(R.string.kilometers_per_hour, maxSpeed));
-            avgMovSpeedView.setText(getString(R.string.kilometers_per_hour, avgMoveSpeed));
-        } else if (Objects.equals(speedFormat, getString(R.string.meters_per_second)))
-        {
-            avgSpeedView.setText(getString(R.string.meters_per_second, avgMetersPerSecond));
-            maxSpeedView.setText(getString(R.string.meters_per_second, maxSpeed));
-            avgMovSpeedView.setText(getString(R.string.meters_per_second, avgMoveSpeed));
-        }
-
+    private void setDurationData()
+    {
+        long hours = viewModel.getHours();
+        long minutes = viewModel.getMinutes();
+        long seconds = viewModel.getSeconds();
         durationView.setText(getString(R.string.duration_field, hours, minutes, seconds));
-
     }
 
     private void initFields(View v)
@@ -124,7 +144,6 @@ public class TrackDetailsFragment extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-
         viewModel = new ViewModelProvider(this).get(TrackDetailsViewModel.class);
         viewModel.setTrackById(trackId);
         toolbarTitleUpdater.updateToolbarTitle(getString(R.string.title_track_details, viewModel.getTrackName()));

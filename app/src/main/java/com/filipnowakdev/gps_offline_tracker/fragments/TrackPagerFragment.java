@@ -21,8 +21,7 @@ public class TrackPagerFragment extends Fragment
     private static final int NUM_PAGES = 2;
     private long trackId;
     private ViewPager2 viewPager;
-    private TabLayout tabLayout;
-    private FragmentStateAdapter pagerAdapter;
+
 
     public TrackPagerFragment()
     {
@@ -44,11 +43,22 @@ public class TrackPagerFragment extends Fragment
                              @Nullable Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.track_pager_fragment, container, false);
-        viewPager = v.findViewById(R.id.pager);
-        tabLayout = v.findViewById(R.id.tab_layout);
-        pagerAdapter = new TrackPagerAdapter(this, this.trackId);
-        viewPager.setAdapter(pagerAdapter);
+        initViewPager(v);
+        initTabLayout(v);
+        return v;
 
+    }
+
+    private void initViewPager(View v)
+    {
+        viewPager = v.findViewById(R.id.pager);
+        FragmentStateAdapter pagerAdapter = new TrackPagerAdapter(this, this.trackId);
+        viewPager.setAdapter(pagerAdapter);
+    }
+
+    private void initTabLayout(View v)
+    {
+        TabLayout tabLayout = v.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) ->
                 {
@@ -59,9 +69,6 @@ public class TrackPagerFragment extends Fragment
                         text = getString(R.string.track_plot);
                     tab.setText(text);
                 }).attach();
-
-        return v;
-
     }
 
     private class TrackPagerAdapter extends FragmentStateAdapter

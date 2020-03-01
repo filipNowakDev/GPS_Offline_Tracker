@@ -8,19 +8,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.filipnowakdev.gps_offline_tracker.R;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 public class TrackPagerFragment extends Fragment
 {
     static final String TRACK_ID = "track_id";
     private static final int NUM_PAGES = 2;
     private long trackId;
-    private ViewPager2 viewPager;
+    private ViewPager viewPager;
 
 
     public TrackPagerFragment()
@@ -44,7 +43,7 @@ public class TrackPagerFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.track_pager_fragment, container, false);
         initViewPager(v);
-        initTabLayout(v);
+        //initTabLayout(v);
         return v;
 
     }
@@ -52,11 +51,11 @@ public class TrackPagerFragment extends Fragment
     private void initViewPager(View v)
     {
         viewPager = v.findViewById(R.id.pager);
-        FragmentStateAdapter pagerAdapter = new TrackPagerAdapter(this, this.trackId);
+        FragmentStatePagerAdapter pagerAdapter = new TrackPagerAdapter(this.getChildFragmentManager(), this.trackId);
         viewPager.setAdapter(pagerAdapter);
     }
 
-    private void initTabLayout(View v)
+/*    private void initTabLayout(View v)
     {
         TabLayout tabLayout = v.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager,
@@ -69,22 +68,23 @@ public class TrackPagerFragment extends Fragment
                         text = getString(R.string.track_plot);
                     tab.setText(text);
                 }).attach();
-    }
+    }*/
 
-    private class TrackPagerAdapter extends FragmentStateAdapter
+    private class TrackPagerAdapter extends FragmentStatePagerAdapter
     {
 
         private long trackId;
 
-        public TrackPagerAdapter(Fragment f, long trackId)
+        public TrackPagerAdapter(@NonNull FragmentManager fm, long trackId)
         {
-            super(f);
+            super(fm);
             this.trackId = trackId;
         }
 
+
         @NonNull
         @Override
-        public Fragment createFragment(int position)
+        public Fragment getItem(int position)
         {
             if (position == 0)
                 return TrackDetailsFragment.newInstance(trackId);
@@ -92,8 +92,18 @@ public class TrackPagerFragment extends Fragment
                 return TrackPlotFragment.newInstance(trackId);
         }
 
+        @Nullable
         @Override
-        public int getItemCount()
+        public CharSequence getPageTitle(int position)
+        {
+            if (position == 0)
+                return getString(R.string.track_details);
+            else
+                return getString(R.string.track_plot);
+        }
+
+        @Override
+        public int getCount()
         {
             return NUM_PAGES;
         }

@@ -231,31 +231,25 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private boolean showSaveDialog()
     {
+        //TODO extract custom DialogBuilder
         AtomicBoolean cancelledSaving = new AtomicBoolean(false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.track_name_string));
 
-        final EditText input = addEditTextToDialog(builder);
-        setDialogButtonListeners(cancelledSaving, builder, input);
+        final EditText input = getDialogInputBox();
+        setInitialFilename(input);
+        builder.setView(input);
 
+        builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) ->
+                saveRecording(input));
+        builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> cancelledSaving.set(true));
         builder.show();
 
         return cancelledSaving.get();
     }
 
-    private void setDialogButtonListeners(AtomicBoolean cancelledSaving, AlertDialog.Builder builder, EditText input)
-    {
-        builder.setPositiveButton(getString(R.string.ok_string), (dialog, which) -> endRecording(input));
-        builder.setNegativeButton(getString(R.string.cancel_string), (dialog, which) -> cancelSaving(cancelledSaving));
-    }
-
-    private void cancelSaving(AtomicBoolean cancelledSaving)
-    {
-        cancelledSaving.set(true);
-    }
-
-    private void endRecording(EditText input)
+    private void saveRecording(EditText input)
     {
         String fileName = input.getText().toString();
         locationService.saveRecording(fileName);
@@ -263,16 +257,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     }
 
     @NonNull
-    private EditText addEditTextToDialog(AlertDialog.Builder builder)
-    {
-        final EditText input = getDialogTextBox();
-        setInitialFilename(input);
-        builder.setView(input);
-        return input;
-    }
-
-    @NonNull
-    private EditText getDialogTextBox()
+    private EditText getDialogInputBox()
     {
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.androidplot.util.PixelUtils;
 import com.androidplot.xy.CatmullRomInterpolator;
 import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.PanZoom;
 import com.androidplot.xy.XYGraphWidget;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
@@ -58,8 +59,7 @@ public class TrackPlotFragment extends Fragment
 
         XYSeries speedSeries = viewModel.getSpeedSeries();
 
-        LineAndPointFormatter seriesFormat = new LineAndPointFormatter(Color.RED, Color.GREEN, Color.BLUE, null);
-
+        LineAndPointFormatter seriesFormat = new LineAndPointFormatter(Color.RED, Color.TRANSPARENT, Color.BLUE, null);
         // just for fun, add some smoothing to the lines:
         // see: http://androidplot.com/smooth-curves-and-androidplot/
         seriesFormat.setInterpolationParams(
@@ -67,6 +67,7 @@ public class TrackPlotFragment extends Fragment
 
         // add a new series' to the xyplot:
         plot.addSeries(speedSeries, seriesFormat);
+        PanZoom.attach(plot, PanZoom.Pan.HORIZONTAL, PanZoom.Zoom.STRETCH_HORIZONTAL);
 
         /*plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
             @Override

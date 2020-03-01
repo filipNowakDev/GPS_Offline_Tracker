@@ -8,7 +8,7 @@
     tools:context=".fragments.TrackPagerFragment">
 
 
-    <androidx.viewpager.widget.ViewPager
+    <com.filipnowakdev.gps_offline_tracker.utils.NoScrollViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -19,6 +19,6 @@
             style="@style/Widget.MaterialComponents.TabLayout.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-    </androidx.viewpager.widget.ViewPager>
+    </com.filipnowakdev.gps_offline_tracker.utils.NoScrollViewPager>
 
 </LinearLayout>

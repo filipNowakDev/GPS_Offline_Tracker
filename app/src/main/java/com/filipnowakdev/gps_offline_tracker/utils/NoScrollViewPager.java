@@ -33,4 +33,10 @@ public class NoScrollViewPager extends ViewPager
         super.performClick();
         return false;
     }
+
+    @Override
+    public boolean canScrollHorizontally(int direction)
+    {
+        return true;
+    }
 }

@@ -5,12 +5,11 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYSeries;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Trackpoint;
 import com.filipnowakdev.gps_offline_tracker.database.repositories.TrackRepository;
 import com.filipnowakdev.gps_offline_tracker.database.repositories.TrackpointRepository;
+import com.github.mikephil.charting.data.Entry;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,20 +36,20 @@ public class TrackPlotViewModel extends AndroidViewModel
             System.out.println("Error getting track.");
     }
 
-    public XYSeries getSpeedSeries()
+    public List<Entry> getSpeedInTime()
     {
-        LinkedList<Double> speeds = new LinkedList<>();
-        LinkedList<Long> times = new LinkedList<>();
+        LinkedList<Entry> vals = new LinkedList<>();
+        float currentTime  = 0;
         for (int i = 0; i < trackpoints.size() - 1; i++)
         {
 
             double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
             double timeDiff = (trackpoints.get(i + 1).time - trackpoints.get(i).time) / 1000.0;
             double momentSpeed = distanceDiff / timeDiff;
-            speeds.add(momentSpeed);
-            times.add(trackpoints.get(i).time);
+            vals.add(new Entry(currentTime, (float) momentSpeed));
+            currentTime += timeDiff;
         }
-        return new SimpleXYSeries(times, speeds, "Speed in time");
+        return vals;
     }
 
     // TODO: Implement the ViewModel

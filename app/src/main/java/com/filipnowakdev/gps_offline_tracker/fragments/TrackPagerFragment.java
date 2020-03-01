@@ -43,7 +43,6 @@ public class TrackPagerFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.track_pager_fragment, container, false);
         initViewPager(v);
-        //initTabLayout(v);
         return v;
 
     }
@@ -54,21 +53,6 @@ public class TrackPagerFragment extends Fragment
         FragmentStatePagerAdapter pagerAdapter = new TrackPagerAdapter(this.getChildFragmentManager(), this.trackId);
         viewPager.setAdapter(pagerAdapter);
     }
-
-/*    private void initTabLayout(View v)
-    {
-        TabLayout tabLayout = v.findViewById(R.id.tab_layout);
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) ->
-                {
-                    String text;
-                    if (position == 0)
-                        text = getString(R.string.track_details);
-                    else
-                        text = getString(R.string.track_plot);
-                    tab.setText(text);
-                }).attach();
-    }*/
 
     private class TrackPagerAdapter extends FragmentStatePagerAdapter
     {

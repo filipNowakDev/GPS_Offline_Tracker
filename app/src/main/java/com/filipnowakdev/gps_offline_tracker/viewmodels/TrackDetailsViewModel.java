@@ -14,16 +14,13 @@ import java.util.List;
 
 public class TrackDetailsViewModel extends AndroidViewModel
 {
-    private static final double MIN_MOVEMENT_SPEED = 3.0;
+    private static final double MIN_MOVEMENT_SPEED = 1.5;
 
     private final TrackpointRepository trackpointRepository;
     private final TrackRepository trackRepository;
     private Track track;
     private List<Trackpoint> trackpoints;
-    private double distance;
     private double avgMoveSpeed;
-    private double maxSpeed = 666;
-    private double avgMetersPerSecond;
     private long seconds;
     private long minutes;
     private long hours;
@@ -33,7 +30,6 @@ public class TrackDetailsViewModel extends AndroidViewModel
         super(application);
         trackRepository = new TrackRepository(application);
         trackpointRepository = new TrackpointRepository(application);
-
     }
 
     public void setTrackById(long id)
@@ -49,56 +45,41 @@ public class TrackDetailsViewModel extends AndroidViewModel
     private void calculateData()
     {
 
-        distance = 0;
-
         double moveDistance = 0;
         double moveDuration = 0;
-        maxSpeed = 0;
 
         if (trackpoints.size() >= 2)
         {
             for (int i = 0; i < trackpoints.size() - 1; i++)
             {
-
-
                 double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
                 double timeDiff = (trackpoints.get(i + 1).time - trackpoints.get(i).time) / 1000.0;
-                double momentSpeed = distanceDiff / timeDiff;
 
-                if (momentSpeed > maxSpeed && momentSpeed != Double.POSITIVE_INFINITY)
-                    maxSpeed = momentSpeed;
-
+                double momentSpeed = trackpoints.get(i).speed;
                 if (momentSpeed > MIN_MOVEMENT_SPEED && momentSpeed != Double.POSITIVE_INFINITY)
                 {
                     moveDuration += timeDiff;
                     moveDistance += distanceDiff;
                 }
-                distance += distanceDiff;
             }
-            long duration = trackpoints.get(trackpoints.size() - 1).time - trackpoints.get(0).time;
-            long allSecondsDuration = duration / 1000;
-            hours = (duration / 3600000);
-            duration -= hours * 3600000;
-            minutes = duration / 60000;
-            duration -= minutes * 60000;
-            seconds = duration / 1000;
 
-            avgMetersPerSecond = distance / allSecondsDuration;
+            hours = (track.duration / 3600000);
+            track.duration -= hours * 3600000;
+            minutes = track.duration / 60000;
+            track.duration -= minutes * 60000;
+            seconds = track.duration / 1000;
             avgMoveSpeed = Double.valueOf(moveDistance / moveDuration).isNaN() ? 0 : moveDistance / moveDuration;
         }
         else
         {
             hours = minutes = seconds = 0;
-            maxSpeed = 0;
-            distance = 0;
-            avgMetersPerSecond = 0;
             avgMoveSpeed = 0;
         }
     }
 
     public double getDistance()
     {
-        return distance;
+        return track.distance;
     }
 
     public double getAvgMoveSpeed()
@@ -108,12 +89,12 @@ public class TrackDetailsViewModel extends AndroidViewModel
 
     public double getMaxSpeed()
     {
-        return maxSpeed;
+        return track.maxSpeed;
     }
 
     public double getAvgMetersPerSecond()
     {
-        return avgMetersPerSecond;
+        return track.avgSpeed;
     }
 
     public long getSeconds()
@@ -133,6 +114,6 @@ public class TrackDetailsViewModel extends AndroidViewModel
 
     public String getTrackName()
     {
-        return track.getName();
+        return track.name;
     }
 }

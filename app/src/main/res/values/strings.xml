@@ -40,8 +40,8 @@
     <string name="meters_per_second_unit" translatable="false">m/s</string>
     <string name="kilometers_per_hour_unit" translatable="false">km/h</string>
     <string name="units_category">Units</string>
-    <string name="unit_speed">Speed</string>
-    <string name="speed_label_kph" >Speed: %1$.2f km/h</string>
+    <string name="speed">Speed</string>
+    <string name="speed_label_kph">Speed: %1$.2f km/h</string>
     <string name="lat_placeholder">Lat: …</string>
     <string name="lon_placeholder">Lon: …</string>
     <string name="acc_placeholder">Acc: …</string>
@@ -55,4 +55,9 @@
     <string name="delete_confirm_header_string">Are you sure you want to delete this track?</string>
     <string name="marker_title_string">You are here.</string>
     <string name="track_plot">Plot</string>
+
+    <string name="time">Time</string>
+    <string name="bpm" translatable="false">BPM</string>
+    <string name="x_axis_value">X axis value</string>
+    <string name="y_axis_value">Y axis value</string>
 </resources>

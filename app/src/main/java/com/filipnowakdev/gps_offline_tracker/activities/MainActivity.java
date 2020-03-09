@@ -24,6 +24,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.PreferenceManager;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         initNavigation();
         locationViewModel = new ViewModelProvider(this).get(LocationServiceBoundViewModel.class);
         locationViewModel.setIsBound(false);
+        PreferenceManager.setDefaultValues(this, R.xml.settings, true);
     }
 
     @Override

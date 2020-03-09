@@ -9,4 +9,24 @@
         <item>@string/meters_per_second</item>
     </array>
 
+    <array name="plot_x_axis_labels">
+        <item>@string/distance</item>
+        <item>@string/time</item>
+    </array>
+
+    <array name="plot_x_axis_values">
+        <item>distance</item>
+        <item>time</item>
+    </array>
+
+    <array name="plot_y_axis_labels">
+        <item>@string/speed</item>
+        <item>@string/bpm</item>
+    </array>
+    <array name="plot_y_axis_values">
+        <item>speed</item>
+        <item>bpm</item>
+    </array>
+
+
 </resources>

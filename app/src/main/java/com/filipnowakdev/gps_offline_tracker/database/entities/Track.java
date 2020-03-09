@@ -18,6 +18,14 @@ public class Track
 
     public long creationDate;
 
+    public double avgSpeed;
+
+    public double maxSpeed;
+
+    public double distance;
+
+    public long duration;
+
     public long getId()
     {
         return id;

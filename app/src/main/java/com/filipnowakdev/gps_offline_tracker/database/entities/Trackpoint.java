@@ -26,7 +26,25 @@ public class Trackpoint
     public long trackId;
     public long sequenceNumber;
 
+    public double speed;
+    public double distanceFromStart;
+    public long timeFromStart;
 
+    public Trackpoint(Track recordedTrack, Location location, int bpm, long sequenceNumber)
+    {
+        trackId = recordedTrack.id;
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        elevation = location.getAltitude();
+        speed = location.getSpeed();
+        this.bpm = bpm;
+        this.sequenceNumber = sequenceNumber;
+        time = location.getTime();
+    }
+
+    public Trackpoint()
+    {
+    }
 
     public long getId()
     {

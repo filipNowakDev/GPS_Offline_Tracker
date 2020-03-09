@@ -27,7 +27,7 @@
     <string name="gps_min_distance">Minimalna odległość GPS (metry)</string>
     <string name="gps_min_interval">Minimalny interwał GPS (sekundy)</string>
     <string name="units_category">Jednostki</string>
-    <string name="unit_speed">Prędkość</string>
+    <string name="speed">Prędkość</string>
     <string name="speed_label_kph">Prędkość: %1$.2f km/h</string>
     <string name="lat_placeholder">Szerokość: …</string>
     <string name="lon_placeholder">Wysokość: …</string>
@@ -41,4 +41,7 @@
     <string name="delete_confirm_header_string">Czy na pewno chcesz usunąć tę trasę?</string>
     <string name="marker_title_string">Jesteś tutaj.</string>
     <string name="track_plot">Wykres</string>
+    <string name="time">Czas</string>
+    <string name="x_axis_value">Wartość osi X</string>
+    <string name="y_axis_value">Wartość osi Y</string>
 </resources>

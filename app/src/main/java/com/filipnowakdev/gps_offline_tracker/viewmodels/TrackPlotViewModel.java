@@ -20,6 +20,8 @@ public class TrackPlotViewModel extends AndroidViewModel
     private final TrackpointRepository trackpointRepository;
     private Track track;
     private List<Trackpoint> trackpoints;
+    private String xAxisMode;
+    private String yAxisMode;
 
     public TrackPlotViewModel(@NonNull Application application)
     {
@@ -36,21 +38,55 @@ public class TrackPlotViewModel extends AndroidViewModel
             System.out.println("Error getting track.");
     }
 
-    public List<Entry> getSpeedInTime()
+    public void setPlotMode(String xAxisMode, String yAxisMode)
     {
-        LinkedList<Entry> vals = new LinkedList<>();
-        float currentTime  = 0;
-        for (int i = 0; i < trackpoints.size() - 1; i++)
-        {
-
-            double distanceDiff = trackpoints.get(i).distanceTo(trackpoints.get(i + 1));
-            double timeDiff = (trackpoints.get(i + 1).time - trackpoints.get(i).time) / 1000.0;
-            double momentSpeed = distanceDiff / timeDiff;
-            vals.add(new Entry(currentTime, (float) momentSpeed));
-            currentTime += timeDiff;
-        }
-        return vals;
+        this.xAxisMode = xAxisMode;
+        this.yAxisMode = yAxisMode;
     }
 
-    // TODO: Implement the ViewModel
+    public List<Entry> getEntries()
+    {
+        LinkedList<Entry> entries = new LinkedList<>();
+        for (Trackpoint trackpoint : trackpoints)
+        {
+            float xValue = getXValue(trackpoint);
+            float yValue = getYValue(trackpoint);
+            entries.add(new Entry(xValue, yValue));
+        }
+        return entries;
+    }
+
+    private float getXValue(Trackpoint trackpoint)
+    {
+        float xValue;
+        switch (xAxisMode)
+        {
+            case "distance":
+                xValue = (float)trackpoint.distanceFromStart;
+                break;
+            case "time":
+                xValue = trackpoint.timeFromStart / 1000.0f;
+                break;
+            default:
+                xValue = 0;
+        }
+        return xValue;
+    }
+
+    private float getYValue(Trackpoint trackpoint)
+    {
+        float yValue;
+        switch (yAxisMode)
+        {
+            case "speed":
+                yValue = (float)trackpoint.speed;
+                break;
+            case "bpm":
+                yValue = trackpoint.bpm;
+                break;
+            default:
+                yValue = 0;
+        }
+        return yValue;
+    }
 }

@@ -44,4 +44,7 @@ public interface TrackpointDao
 
     @Update
     void update(Trackpoint trackpoint);
+
+    @Update
+    void updateAll(List<Trackpoint> trackpoints);
 }

@@ -1,5 +1,6 @@
 package com.filipnowakdev.gps_offline_tracker.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackPlotViewModel;
@@ -18,6 +20,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TrackPlotFragment extends Fragment
 {
@@ -48,8 +51,14 @@ public class TrackPlotFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(TrackPlotViewModel.class);
         viewModel.setTrackById(trackId);
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(this.getContext()));
 
-        List<Entry> speedSeries = viewModel.getSpeedInTime();
+        String xAxisMode = sharedPreferences.getString("plot_x_axis", "distance");
+        String yAxisMode = sharedPreferences.getString("plot_y_axis", "speed");
+
+        viewModel.setPlotMode(xAxisMode, yAxisMode);
+        List<Entry> speedSeries = viewModel.getEntries();
         LineDataSet dataSet = new LineDataSet(speedSeries, "Speed");
         LineData lineData = new LineData(dataSet);
         plot.setData(lineData);

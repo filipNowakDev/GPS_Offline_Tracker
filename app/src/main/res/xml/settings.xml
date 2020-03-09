@@ -12,11 +12,11 @@
             android:max="100"
             app:showSeekBarValue="true"/>
         <SeekBarPreference
-            app:key="gps_min_interval"
-            app:title="@string/gps_min_interval"
-            app:defaultValue="5"
             android:max="60"
-            app:showSeekBarValue="true"/>
+            app:defaultValue="5"
+            app:key="gps_min_interval"
+            app:showSeekBarValue="true"
+            app:title="@string/gps_min_interval" />
 
     </PreferenceCategory>
 
@@ -25,12 +25,31 @@
         app:title="@string/units_category">
         <ListPreference
             app:key="unit_speed"
-            app:title="@string/unit_speed"
+            app:title="@string/speed"
             app:entries="@array/units_speed_entries"
             app:entryValues="@array/units_speed_entry_values"
             android:defaultValue="@string/kilometers_per_hour"
             app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="plot_category"
+        app:title="@string/track_plot">
+        <ListPreference
+            app:key="plot_x_axis"
+            app:title="@string/x_axis_value"
+            app:entries="@array/plot_x_axis_labels"
+            app:entryValues="@array/plot_x_axis_values"
+            android:defaultValue="distance"
+            app:useSimpleSummaryProvider="true"/>
+
+        <ListPreference
+            app:key="plot_y_axis"
+            app:title="@string/y_axis_value"
+            app:entries="@array/plot_y_axis_labels"
+            app:entryValues="@array/plot_y_axis_values"
+            android:defaultValue="speed"
+            app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
 

@@ -52,5 +52,14 @@
             app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="sensors_category"
+        app:title="@string/sensors_label">
+        <Preference
+            app:key="sensors_pair"
+            app:title="@string/sensors_pairing"
+            />
+    </PreferenceCategory>
+
 
 </androidx.preference.PreferenceScreen>

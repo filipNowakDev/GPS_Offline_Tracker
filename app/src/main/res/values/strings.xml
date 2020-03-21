@@ -60,4 +60,7 @@
     <string name="bpm" translatable="false">BPM</string>
     <string name="x_axis_value">X axis value</string>
     <string name="y_axis_value">Y axis value</string>
+    <string name="sensors_label">Sensors</string>
+    <string name="sensors_pairing">Pair sensor</string>
+    <string name="save">Save</string>
 </resources>

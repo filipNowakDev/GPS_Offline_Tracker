@@ -65,7 +65,7 @@ public class TracksFragment extends Fragment
     private void assignViewModel()
     {
         tracksViewModel = new ViewModelProvider(this).get(TrackListViewModel.class);
-        tracksViewModel.getTracks().observe(this, tracks ->
+        tracksViewModel.getTracks().observe(getViewLifecycleOwner(), tracks ->
                 trackAdapter.submitList(tracks));
     }
 

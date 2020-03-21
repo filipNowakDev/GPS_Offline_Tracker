@@ -44,4 +44,7 @@
     <string name="time">Czas</string>
     <string name="x_axis_value">Wartość osi X</string>
     <string name="y_axis_value">Wartość osi Y</string>
+    <string name="sensors_label">Czujniki</string>
+    <string name="sensors_pairing">Sparuj sensor</string>
+    <string name="save">Zapisz</string>
 </resources>

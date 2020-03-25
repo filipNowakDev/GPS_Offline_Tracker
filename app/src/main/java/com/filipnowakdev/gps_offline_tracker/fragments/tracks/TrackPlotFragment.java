@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.tracks;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,7 +40,7 @@ public class TrackPlotFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.track_plot_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_track_plot, container, false);
         plot = v.findViewById(R.id.track_plot);
         return v;
     }

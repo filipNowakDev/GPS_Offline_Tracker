@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.tracks;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
+import com.filipnowakdev.gps_offline_tracker.fragments.MapFragment;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.TrackListViewModel;
 
 import java.util.Objects;
@@ -42,7 +43,6 @@ public class TracksFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-
     }
 
     @Override

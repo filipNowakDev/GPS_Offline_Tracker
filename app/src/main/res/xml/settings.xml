@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         app:key="gps_category"
         app:title="@string/gps_category">
         <SeekBarPreference
-            app:key="gps_min_distance"
-            app:title="@string/gps_min_distance"
-            app:defaultValue="10"
             android:max="100"
-            app:showSeekBarValue="true"/>
+            app:defaultValue="10"
+            app:key="gps_min_distance"
+            app:showSeekBarValue="true"
+            app:title="@string/gps_min_distance" />
         <SeekBarPreference
             android:max="60"
             app:defaultValue="5"
@@ -24,11 +24,11 @@
         app:key="units_category"
         app:title="@string/units_category">
         <ListPreference
-            app:key="unit_speed"
-            app:title="@string/speed"
+            android:defaultValue="@string/kilometers_per_hour"
             app:entries="@array/units_speed_entries"
             app:entryValues="@array/units_speed_entry_values"
-            android:defaultValue="@string/kilometers_per_hour"
+            app:key="unit_speed"
+            app:title="@string/speed"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
@@ -36,29 +36,37 @@
         app:key="plot_category"
         app:title="@string/track_plot">
         <ListPreference
-            app:key="plot_x_axis"
-            app:title="@string/x_axis_value"
+            android:defaultValue="distance"
             app:entries="@array/plot_x_axis_labels"
             app:entryValues="@array/plot_x_axis_values"
-            android:defaultValue="distance"
-            app:useSimpleSummaryProvider="true"/>
+            app:key="plot_x_axis"
+            app:title="@string/x_axis_value"
+            app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            app:key="plot_y_axis"
-            app:title="@string/y_axis_value"
+            android:defaultValue="speed"
             app:entries="@array/plot_y_axis_labels"
             app:entryValues="@array/plot_y_axis_values"
-            android:defaultValue="speed"
-            app:useSimpleSummaryProvider="true"/>
+            app:key="plot_y_axis"
+            app:title="@string/y_axis_value"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
     <PreferenceCategory
         app:key="sensors_category"
         app:title="@string/sensors_label">
+        <CheckBoxPreference
+            app:key="use_bpm_sensor"
+            app:title="Use BPM sensor"
+            app:defaultValue="false"/>
+
         <Preference
             app:key="sensors_pair"
-            app:title="@string/sensors_pairing"
-            />
+            app:title="@string/sensors_pairing" />
+
+        <Preference
+            app:key="saved_sensors"
+            app:title="@string/saved_sensors" />
     </PreferenceCategory>
 
 

@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.tracks;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,7 +41,7 @@ public class TrackPagerFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.track_pager_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_track_pager, container, false);
         initViewPager(v);
         return v;
 

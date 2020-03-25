@@ -30,7 +30,7 @@ import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.fragments.HomeFragment;
 import com.filipnowakdev.gps_offline_tracker.interfaces.ToolbarTitleUpdater;
 import com.filipnowakdev.gps_offline_tracker.services.LocationService;
-import com.filipnowakdev.gps_offline_tracker.services.NotificationService;
+import com.filipnowakdev.gps_offline_tracker.services.NotificationBuilder;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.LocationServiceBoundViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
     private ServiceConnection serviceConnection;
     private Intent locationServiceIntent;
 
-    private NotificationService notificationService;
+    private NotificationBuilder notificationService;
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private LocationServiceBoundViewModel locationViewModel;
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
 
     private void initNotificationService()
     {
-        this.notificationService = new NotificationService(this);
+        this.notificationService = new NotificationBuilder(this);
     }
 
     @Override
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnBu
         {
             if (locationService.getLocation() != null)
             {
-                locationService.startForeground(NotificationService.getRecordingNotificationId(), notificationService.getRecordingNotification());
+                locationService.startForeground(NotificationBuilder.getRecordingNotificationId(), notificationService.getRecordingNotification());
                 locationService.startRecording();
                 return HomeFragment.BUTTON_STATE.RECORDING;
             } else

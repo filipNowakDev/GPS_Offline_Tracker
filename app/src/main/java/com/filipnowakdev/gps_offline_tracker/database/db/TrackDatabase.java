@@ -17,7 +17,7 @@ import com.filipnowakdev.gps_offline_tracker.database.entities.Sensor;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Trackpoint;
 
-@Database(entities = {Track.class, Trackpoint.class, Sensor.class}, version = 9)
+@Database(entities = {Track.class, Trackpoint.class, Sensor.class}, version = 10)
 public abstract class TrackDatabase extends RoomDatabase
 {
     private static final String DB_NAME = "track-database.db";
@@ -78,6 +78,17 @@ public abstract class TrackDatabase extends RoomDatabase
         }
     };
 
+    private static final Migration MIGRATION_9_10 = new Migration(9, 10)
+    {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database)
+        {
+            database.execSQL("DROP TABLE sensor");
+            database.execSQL("CREATE TABLE `sensor` " +
+                    "(`name` TEXT, `isDefault` INTEGER NOT NULL, `id` INTEGER NOT NULL, `address` TEXT, PRIMARY KEY(`id`))");
+        }
+    };
+
     public abstract TrackDao trackDao();
     public abstract TrackpointDao trackpointDao();
     public abstract SensorDao sensorDao();
@@ -111,7 +122,7 @@ public abstract class TrackDatabase extends RoomDatabase
                 TrackDatabase.class,
                 DB_NAME)
                 .enableMultiInstanceInvalidation()
-                .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+                .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                 .build();
     }
 }

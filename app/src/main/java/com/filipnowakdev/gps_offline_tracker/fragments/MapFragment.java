@@ -36,7 +36,7 @@ import java.util.List;
 
 public class MapFragment extends Fragment implements LocationListener
 {
-    static final String TRACK_ID = "TRACK_ID";
+    public static final String TRACK_ID = "TRACK_ID";
     private boolean trackOverlayMode;
     private boolean followMode;
     private boolean positionInitialised = false;

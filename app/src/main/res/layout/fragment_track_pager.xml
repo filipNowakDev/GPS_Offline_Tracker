@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragments.TrackPagerFragment">
+    tools:context=".fragments.tracks.TrackPagerFragment">
 
 
     <com.filipnowakdev.gps_offline_tracker.utils.NoScrollViewPager

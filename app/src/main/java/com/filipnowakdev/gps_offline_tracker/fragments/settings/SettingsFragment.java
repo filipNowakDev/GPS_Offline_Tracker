@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.settings;
 
 
 import android.os.Bundle;
@@ -34,6 +34,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
             Navigation.findNavController(Objects.requireNonNull(SettingsFragment.this.getActivity()), R.id.navigation_container)
                     .navigate(R.id.action_settings_to_sensors);
+            return true;
+        });
+
+        Preference savedSensorsPreference = findPreference("saved_sensors");
+        assert savedSensorsPreference != null;
+        savedSensorsPreference.setOnPreferenceClickListener(preference ->
+        {
+
+            Navigation.findNavController(Objects.requireNonNull(SettingsFragment.this.getActivity()), R.id.navigation_container)
+                    .navigate(R.id.action_settings_to_saved_sensors);
             return true;
         });
     }

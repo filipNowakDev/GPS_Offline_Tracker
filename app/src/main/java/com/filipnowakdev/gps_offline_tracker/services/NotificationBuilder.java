@@ -7,24 +7,22 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.activities.MainActivity;
 
-public class NotificationService
+public class NotificationBuilder
 {
     private static final int RECORDING_NOTIFICATION_ID = 2137;
 
     private final static String NOTIFICATION_CHANNEL_ID = "com.filipnowakdev.gps_offline_tracker.notifications";
     private NotificationCompat.Builder recordingNotificationBuilder;
-    private Context context;
     private PendingIntent mainActivityIntent;
 
-    public NotificationService(Context context)
+    public NotificationBuilder(Context context)
     {
-        this.context = context;
         initIntent(context);
 
         createNotificationChannel(context);
@@ -63,18 +61,6 @@ public class NotificationService
             if (notificationManager != null)
                 notificationManager.createNotificationChannel(channel);
         }
-    }
-
-    public void displayRecordingNotification()
-    {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.context);
-        notificationManager.notify(RECORDING_NOTIFICATION_ID, recordingNotificationBuilder.build());
-    }
-
-    public void hideRecordingNotification()
-    {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.context);
-        notificationManager.cancel(RECORDING_NOTIFICATION_ID);
     }
 
     public Notification getRecordingNotification()

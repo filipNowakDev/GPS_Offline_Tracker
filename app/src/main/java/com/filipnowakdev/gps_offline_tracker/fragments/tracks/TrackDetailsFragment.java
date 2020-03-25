@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.tracks;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -63,4 +63,8 @@
     <string name="sensors_label">Sensors</string>
     <string name="sensors_pairing">Pair sensor</string>
     <string name="save">Save</string>
+    <string name="saved_sensors">Saved sensors</string>
+    <string name="sensor_already_saved">Sensor already saved</string>
+    <string name="sansor_saved">Sensor saved</string>
+    <string name="default_label">Default:</string>
 </resources>

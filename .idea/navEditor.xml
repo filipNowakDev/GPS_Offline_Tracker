@@ -51,13 +51,25 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="savedSensorsFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="437" />
+                            <option name="y" value="929" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="sensorsFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="765" />
-                            <option name="y" value="714" />
+                            <option name="x" value="432" />
+                            <option name="y" value="608" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -68,12 +80,17 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="413" />
-                            <option name="y" value="477" />
+                            <option name="x" value="146" />
+                            <option name="y" value="805" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_settings_to_saved_sensors">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_settings_to_sensors">
                               <value>
                                 <LayoutPositions />

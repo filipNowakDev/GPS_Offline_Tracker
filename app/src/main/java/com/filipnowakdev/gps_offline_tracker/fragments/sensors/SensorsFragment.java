@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.sensors;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
+import com.filipnowakdev.gps_offline_tracker.exceptions.SensorAlreadySavedException;
 import com.filipnowakdev.gps_offline_tracker.viewmodels.SensorsViewModel;
 
 import java.util.LinkedList;
@@ -39,7 +41,8 @@ public class SensorsFragment extends Fragment
 {
     private OnListFragmentInteractionListener listInteractionListener;
 
-    final static public UUID HEART_RATE_MEASUREMENT = UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb");
+    private final static String HEART_RATE_UUID_STRING = "0000180d-0000-1000-8000-00805f9b34fb";
+    private final static UUID HEART_RATE_MEASUREMENT = UUID.fromString(HEART_RATE_UUID_STRING);
 
     private static final int REQUEST_ENABLE_BT = 666;
     private SensorsViewModel viewModel;
@@ -64,15 +67,29 @@ public class SensorsFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.sensors_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_sensors, container, false);
         leDeviceListAdapter = new SensorsRecyclerViewAdapter((device, view) ->
         {
-            viewModel.saveDevice(device);
-            Toast.makeText(getContext(), "Sensor saved", Toast.LENGTH_SHORT).show();
+            try
+            {
+                viewModel.saveDevice(device);
+            } catch (SensorAlreadySavedException e)
+            {
+                Toast.makeText(getContext(), getString(R.string.sensor_already_saved), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Toast.makeText(getContext(), getString(R.string.sansor_saved), Toast.LENGTH_SHORT).show();
         });
         initRecyclerView(v);
         return v;
 
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        scanLeDevice(false);
     }
 
     @Override
@@ -91,9 +108,9 @@ public class SensorsFragment extends Fragment
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        //scanFilter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString("0x180D")).build();
+        scanFilter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(HEART_RATE_UUID_STRING)).build();
         filters = new LinkedList<>();
-        //filters.add(scanFilter);
+        filters.add(scanFilter);
         handler = new Handler();
         scanLeDevice(true);
 
@@ -108,7 +125,8 @@ public class SensorsFragment extends Fragment
             handler.postDelayed(() ->
             {
                 mScanning = false;
-                Toast.makeText(getContext(), "Finished scanning.", Toast.LENGTH_SHORT).show();
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Finished scanning.", Toast.LENGTH_SHORT).show();
                 leScanner.stopScan(leScanCallback);
             }, SCAN_PERIOD);
 

@@ -11,5 +11,5 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="8dp"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:context=".fragments.TracksFragment"
+    tools:context=".fragments.tracks.TracksFragment"
     tools:listitem="@layout/fragment_file" />

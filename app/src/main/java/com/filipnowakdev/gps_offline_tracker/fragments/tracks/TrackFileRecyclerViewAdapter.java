@@ -1,4 +1,4 @@
-package com.filipnowakdev.gps_offline_tracker.fragments;
+package com.filipnowakdev.gps_offline_tracker.fragments.tracks;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.filipnowakdev.gps_offline_tracker.R;
 import com.filipnowakdev.gps_offline_tracker.database.entities.Track;
-import com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment.OnListFragmentInteractionListener;
+import com.filipnowakdev.gps_offline_tracker.fragments.tracks.TracksFragment.OnListFragmentInteractionListener;
 import com.filipnowakdev.gps_offline_tracker.utils.DateUtils;
 
 

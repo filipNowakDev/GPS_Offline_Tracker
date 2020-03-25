@@ -27,7 +27,7 @@
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/tracksFragment"
-        android:name="com.filipnowakdev.gps_offline_tracker.fragments.TracksFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.tracks.TracksFragment"
         android:label="@string/title_tracks"
         tools:layout="@layout/fragment_file_list">
         <action
@@ -54,16 +54,23 @@
     </fragment>
     <fragment
         android:id="@+id/trackDetailsFragment"
-        android:name="com.filipnowakdev.gps_offline_tracker.fragments.TrackDetailsFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.tracks.TrackDetailsFragment"
         android:label="@string/track_details"
         tools:layout="@layout/fragment_track_details" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.filipnowakdev.gps_offline_tracker.fragments.SettingsFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.settings.SettingsFragment"
         android:label="@string/toolbar_settings" >
         <action
             android:id="@+id/action_settings_to_sensors"
             app:destination="@id/sensorsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_settings_to_saved_sensors"
+            app:destination="@id/savedSensorsFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -78,12 +85,17 @@
         app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     <fragment
         android:id="@+id/trackPagerFragment"
-        android:name="com.filipnowakdev.gps_offline_tracker.fragments.TrackPagerFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.tracks.TrackPagerFragment"
         android:label="track_pager_fragment"
-        tools:layout="@layout/track_pager_fragment" />
+        tools:layout="@layout/fragment_track_pager" />
     <fragment
         android:id="@+id/sensorsFragment"
-        android:name="com.filipnowakdev.gps_offline_tracker.fragments.SensorsFragment"
-        android:label="sensors_fragment"
-        tools:layout="@layout/sensors_fragment" />
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.sensors.SensorsFragment"
+        android:label="@string/sensors_pairing"
+        tools:layout="@layout/fragment_sensors" />
+    <fragment
+        android:id="@+id/savedSensorsFragment"
+        android:name="com.filipnowakdev.gps_offline_tracker.fragments.sensors.SavedSensorsFragment"
+        android:label="@string/saved_sensors"
+        tools:layout="@layout/fragment_saved_sensors" />
 </navigation>

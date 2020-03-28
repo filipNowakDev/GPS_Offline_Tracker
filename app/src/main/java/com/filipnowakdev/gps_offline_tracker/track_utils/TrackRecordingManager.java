@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class TrackRecordingService
+public class TrackRecordingManager
 {
     private TrackDatabase db;
     private Track recordedTrack;
@@ -24,7 +24,7 @@ public class TrackRecordingService
     public static final String TEMP_TRACK_NAME = "com.filipnowakdev.__temp";
 
 
-    public TrackRecordingService(TrackDatabase db)
+    public TrackRecordingManager(TrackDatabase db)
     {
         this.db = db;
         hasSpeedFromGps = false;

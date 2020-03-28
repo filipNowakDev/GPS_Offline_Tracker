@@ -2,15 +2,12 @@ package com.filipnowakdev.gps_offline_tracker.fragments.sensors;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,10 +49,11 @@ public class SensorsFragment extends Fragment
     private List<ScanFilter> filters;
 
     private boolean mScanning;
-    private Handler handler;
-    private static final long SCAN_PERIOD = 20000;
+    private Handler finishScanHandler;
+    private static final long SCAN_PERIOD = 10000;
     private SensorsRecyclerViewAdapter leDeviceListAdapter;
     private RecyclerView recyclerView;
+    private ScanSettings scanSettings;
 
 
     public static SensorsFragment newInstance()
@@ -97,6 +95,17 @@ public class SensorsFragment extends Fragment
     {
         super.onActivityCreated(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(SensorsViewModel.class);
+        initBluetoothScanner();
+        initScanFilter();
+        initScanSettings();
+        initFinishScanHandler();
+        scanLeDevice(true);
+
+
+    }
+
+    private void initBluetoothScanner()
+    {
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) Objects.requireNonNull(getContext()).getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
@@ -107,14 +116,23 @@ public class SensorsFragment extends Fragment
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+    }
 
+    private void initFinishScanHandler()
+    {
+        finishScanHandler = new Handler();
+    }
+
+    private void initScanSettings()
+    {
+        scanSettings = new ScanSettings.Builder().build();
+    }
+
+    private void initScanFilter()
+    {
         scanFilter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(HEART_RATE_UUID_STRING)).build();
         filters = new LinkedList<>();
         filters.add(scanFilter);
-        handler = new Handler();
-        scanLeDevice(true);
-
-
     }
 
     private void scanLeDevice(final boolean enable)
@@ -122,7 +140,7 @@ public class SensorsFragment extends Fragment
         if (enable)
         {
             // Stops scanning after a pre-defined scan period.
-            handler.postDelayed(() ->
+            finishScanHandler.postDelayed(() ->
             {
                 mScanning = false;
                 if (getContext() != null)
@@ -131,7 +149,7 @@ public class SensorsFragment extends Fragment
             }, SCAN_PERIOD);
 
             mScanning = true;
-            leScanner.startScan(leScanCallback);
+            leScanner.startScan(filters, scanSettings, leScanCallback);
         } else
         {
             mScanning = false;
@@ -147,7 +165,7 @@ public class SensorsFragment extends Fragment
         {
             super.onScanResult(callbackType, result);
 
-            BluetoothGatt bluetoothGatt = result.getDevice().connectGatt(getContext(), false, new BluetoothGattCallback()
+            /*BluetoothGatt bluetoothGatt = result.getDevice().connectGatt(getContext(), false, new BluetoothGattCallback()
             {
 
                 @Override
@@ -170,32 +188,24 @@ public class SensorsFragment extends Fragment
                 public void onServicesDiscovered(BluetoothGatt gatt, int status)
                 {
                     System.out.println("!!! DONE onServicesDiscovered received: " + status);
-                    System.out.println(gatt.getDevice().getName() + ": ");
-                    StringBuilder uuids = new StringBuilder();
-                    for (BluetoothGattService service : gatt.getServices())
+                    System.out.println("HEART RATE SENSOR DISCOVERED - SHALL ADD ONLY THIS");
+                    Objects.requireNonNull(getActivity()).runOnUiThread(() ->
                     {
-                        uuids.append("\n");
-                        uuids.append(service.getUuid());
-                        if (service.getUuid().equals(HEART_RATE_MEASUREMENT))
+                        if (!leDeviceListAdapter.exists(result.getDevice()))
                         {
-                            System.out.println("HEART RATE SENSOR DISCOVERED - SHALL ADD ONLY THIS");
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() ->
-                            {
-                                if (!leDeviceListAdapter.exists(result.getDevice()))
-                                {
-                                    leDeviceListAdapter.addDevice(gatt.getDevice());
-                                    leDeviceListAdapter.notifyItemInserted(leDeviceListAdapter.getItemCount() - 1);
-                                }
-                            });
+                            leDeviceListAdapter.addDevice(gatt.getDevice());
+                            leDeviceListAdapter.notifyItemInserted(leDeviceListAdapter.getItemCount() - 1);
                         }
-                    }
-                    System.out.println(uuids.toString());
-                    gatt.discoverServices();
+                    });
                     gatt.disconnect();
                     gatt.close();
                 }
-            });
-
+            });*/
+            if (!leDeviceListAdapter.exists(result.getDevice()))
+            {
+                leDeviceListAdapter.addDevice(result.getDevice());
+                leDeviceListAdapter.notifyItemInserted(leDeviceListAdapter.getItemCount() - 1);
+            }
         }
 
         @Override

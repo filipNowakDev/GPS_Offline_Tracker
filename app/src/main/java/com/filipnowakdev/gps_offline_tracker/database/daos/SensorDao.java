@@ -16,8 +16,11 @@ public interface SensorDao
     @Query("SELECT * FROM sensor")
     List<Sensor> getAll();
 
-    @Query("SELECT * from sensor LIMIT 1")
+    @Query("SELECT * FROM sensor LIMIT 1")
     List<Sensor> getFirst();
+
+    @Query("SELECT * FROM sensor WHERE isDefault == 1")
+    Sensor getDefault();
 
     @Insert
     void insert(Sensor sensor);

@@ -19,21 +19,23 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
+import com.filipnowakdev.gps_offline_tracker.ble_utils.SensorManager;
 import com.filipnowakdev.gps_offline_tracker.database.db.TrackDatabase;
-import com.filipnowakdev.gps_offline_tracker.track_utils.TrackRecordingService;
+import com.filipnowakdev.gps_offline_tracker.track_utils.TrackRecordingManager;
 
-public class LocationService extends Service implements LocationListener
+public class LocationService extends Service implements LocationListener, SensorManager.OnSensorInteractionCallback
 {
-
-
     private LocationManager locationManager;
 
     private boolean isRecording;
     private IBinder binder = new LocationServiceBinder();
     private int minDistanceChange;
     private int minUpdateInterval;
+    private boolean useBpmSensor;
     private TrackDatabase db;
-    private TrackRecordingService trackRecordingService;
+    private TrackRecordingManager trackRecordingManager;
+    private SensorManager sensorManager;
+    private int currentBpm;
 
     public boolean isRecordingActive()
     {
@@ -58,10 +60,20 @@ public class LocationService extends Service implements LocationListener
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateInterval, minDistanceChange, this);
             }
 
-            System.out.println("[DEBUG] : starting with interval " + minUpdateInterval + " ms");
-            trackRecordingService.createNewTrack();
-            isRecording = true;
-            Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
+            if(sharedPreferences.getBoolean("use_bpm_sensor", false) != useBpmSensor)
+                useBpmSensor = sharedPreferences.getBoolean("use_bpm_sensor", false);
+            currentBpm = 0;
+            if (useBpmSensor == false)
+            {
+                trackRecordingManager.createNewTrack();
+                isRecording = true;
+                Toast.makeText(this, "Recording started.", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(this, "Scanning for sensor.", Toast.LENGTH_SHORT).show();
+                sensorManager.connectToDefaultSensor();
+            }
         }
     }
 
@@ -70,10 +82,9 @@ public class LocationService extends Service implements LocationListener
         if (isRecording)
         {
             isRecording = false;
-            //gpxFileService.saveTrackAsFile(filename);
-            trackRecordingService.stopRecording(name);
-            Toast.makeText(this, "Recording saved as " + name + ".gpx", Toast.LENGTH_SHORT).show();
-            System.out.println("[DEBUG] : inside SERWIs dzialaj plis bo zakonczylo nagrywaccc");
+            trackRecordingManager.stopRecording(name);
+            sensorManager.disconnectDefaultSensor();
+            Toast.makeText(this, "Recording saved as " + name + ".", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -94,6 +105,7 @@ public class LocationService extends Service implements LocationListener
                     //milliseconds
                     minUpdateInterval = sharedPreferences.getInt("gps_min_interval", 5) * 1000;
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateInterval, minDistanceChange, this);
+                    useBpmSensor = sharedPreferences.getBoolean("use_bpm_sensor", false);
                 } else
                 {
                     displayError();
@@ -109,8 +121,8 @@ public class LocationService extends Service implements LocationListener
     {
         if (db == null)
             db = TrackDatabase.getLocationServiceInstance(getApplicationContext());
-        if (trackRecordingService == null)
-            trackRecordingService = new TrackRecordingService(db);
+        if (trackRecordingManager == null)
+            trackRecordingManager = new TrackRecordingManager(db);
     }
 
     private void displayError()
@@ -139,21 +151,24 @@ public class LocationService extends Service implements LocationListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        System.out.println("[DEBUG] : sTaaRt SERWisu xdxdxdx");
-
         super.onStartCommand(intent, flags, startId);
         initLocationManager();
         initTrackRecordingService();
+        initSensorManager();
         return START_REDELIVER_INTENT;
+    }
+
+    private void initSensorManager()
+    {
+        sensorManager = new SensorManager(getApplicationContext(), db, this);
     }
 
     @Override
     public void onDestroy()
     {
         super.onDestroy();
-        System.out.println("[DEBUG] : Wywalenie serwisu na smietnik");
-
         locationManager.removeUpdates(this);
+        sensorManager.disconnectDefaultSensor();
     }
 
     @Override
@@ -167,8 +182,7 @@ public class LocationService extends Service implements LocationListener
     {
         if (isRecording)
         {
-            System.out.println("[DEBUG] NEW LOCATION");
-            trackRecordingService.addTrackpoint(location, 0);
+            trackRecordingManager.addTrackpoint(location, currentBpm);
         }
     }
 
@@ -185,6 +199,26 @@ public class LocationService extends Service implements LocationListener
     @Override
     public void onProviderDisabled(String s)
     {
+    }
+
+    @Override
+    public void onSensorConnected()
+    {
+        trackRecordingManager.createNewTrack();
+        isRecording = true;
+        System.out.println("Default Sensor Connected.\nRecording started.");
+    }
+
+    @Override
+    public void onSensorDisconnected()
+    {
+        System.out.println("Sensor Disconnected.\nRecording started.");
+    }
+
+    @Override
+    public void onBpmUpdate(int bpm)
+    {
+        this.currentBpm = bpm;
     }
 
     public class LocationServiceBinder extends Binder
